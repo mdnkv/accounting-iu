@@ -1,16 +1,16 @@
 package dev.mednikov.accounting.transactions.services;
 
 import dev.mednikov.accounting.transactions.dto.TransactionDto;
-import dev.mednikov.accounting.users.models.User;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface TransactionService {
 
     TransactionDto createTransaction(TransactionDto transactionDto);
 
-    List<TransactionDto> getTransactions (Long organizationId);
+    List<TransactionDto> getTransactions (UUID organizationId);
 
-    void deleteTransaction(Long transactionId);
+    void deleteTransaction(UUID transactionId);
 
 }

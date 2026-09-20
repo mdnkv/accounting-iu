@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.accounts.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.accounts.dto.AccountDto;
 import dev.mednikov.accounting.accounts.exceptions.AccountAlreadyExistsException;
 import dev.mednikov.accounting.accounts.exceptions.AccountDeletionException;
@@ -24,11 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class AccountServiceImplTest {
-
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
 
     @Mock private AccountRepository accountRepository;
     @Mock private OrganizationRepository organizationRepository;
@@ -38,9 +36,9 @@ class AccountServiceImplTest {
 
     @Test
     void createAccount_alreadyExistsTest(){
-        Long accountId = snowflakeGenerator.next();
+        UUID accountId = UUID.randomUUID();
         String accountCode = "10100";
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Jäger AG & Co. KGaA");
@@ -53,7 +51,7 @@ class AccountServiceImplTest {
         account.setCode(accountCode);
 
         AccountDto payload = new AccountDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setAccountType(AccountType.ASSET);
         payload.setName("Cash - Regular Checking");
         payload.setCode(accountCode);
@@ -64,9 +62,9 @@ class AccountServiceImplTest {
 
     @Test
     void createAccount_successTest(){
-        Long accountId = snowflakeGenerator.next();
+        UUID accountId = UUID.randomUUID();
         String accountCode = "10100";
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Reichert AG & Co. KG");
@@ -79,13 +77,13 @@ class AccountServiceImplTest {
         account.setCode(accountCode);
 
         AccountDto payload = new AccountDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setAccountType(AccountType.ASSET);
         payload.setName("Cash - Regular Checking");
         payload.setCode(accountCode);
 
         Mockito.when(accountRepository.findByOrganizationIdAndCode(organizationId, accountCode)).thenReturn(Optional.empty());
-        Mockito.when(organizationRepository.getReferenceById(organizationId)).thenReturn(organization);
+        Mockito.when(organizationRepository.findById(organizationId)).thenReturn(Optional.of(organization));
         Mockito.when(accountRepository.save(account)).thenReturn(account);
 
         AccountDto result = accountService.createAccount(payload);
@@ -94,16 +92,16 @@ class AccountServiceImplTest {
 
     @Test
     void updateAccount_notFoundTest(){
-        Long accountId = snowflakeGenerator.next();
+        UUID accountId = UUID.randomUUID();
         String accountCode = "12500";
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
 
         AccountDto payload = new AccountDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setAccountType(AccountType.ASSET);
         payload.setName("Allowance for Doubtful Accounts");
         payload.setCode(accountCode);
-        payload.setId(accountId.toString());
+        payload.setId(accountId);
 
         Mockito.when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
         Assertions.assertThatThrownBy(() -> accountService.updateAccount(payload)).isInstanceOf(AccountNotFoundException.class);
@@ -111,20 +109,20 @@ class AccountServiceImplTest {
 
     @Test
     void updateAccount_alreadyExistsTest(){
-        Long accountId = snowflakeGenerator.next();
+        UUID accountId = UUID.randomUUID();
         String accountCode = "17000";
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Springer Popp GmbH");
 
         AccountDto payload = new AccountDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setAccountType(AccountType.ASSET);
         payload.setName("Allowance for Doubtful Accounts");
         payload.setCode(accountCode);
-        payload.setId(accountId.toString());
+        payload.setId(accountId);
 
         Account account = new Account();
         account.setId(accountId);
@@ -134,7 +132,7 @@ class AccountServiceImplTest {
         account.setCode("12500");
 
         Account anotherAccount = new Account();
-        anotherAccount.setId(snowflakeGenerator.next());
+        anotherAccount.setId(UUID.randomUUID());
         anotherAccount.setAccountType(AccountType.ASSET);
         anotherAccount.setCode(accountCode);
         anotherAccount.setOrganization(organization);
@@ -148,20 +146,20 @@ class AccountServiceImplTest {
 
     @Test
     void updateAccount_successTest(){
-        Long accountId = snowflakeGenerator.next();
+        UUID accountId = UUID.randomUUID();
         String accountCode = "20100";
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Breuer GmbH & Co. KG");
 
         AccountDto payload = new AccountDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setAccountType(AccountType.ASSET);
         payload.setName("Notes Payable");
         payload.setCode(accountCode);
-        payload.setId(accountId.toString());
+        payload.setId(accountId);
 
         Account account = new Account();
         account.setId(accountId);
@@ -178,14 +176,14 @@ class AccountServiceImplTest {
 
     @Test
     void getAllAccountsTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Fiedler GmbH & Co. KGaA");
 
         List<Account> accounts = new ArrayList<>();
         Account account1 = new Account();
-        account1.setId(snowflakeGenerator.next());
+        account1.setId(UUID.randomUUID());
         account1.setAccountType(AccountType.LIABILITY);
         account1.setOrganization(organization);
         account1.setName("Notes Payable – Credit Line #2");
@@ -194,7 +192,7 @@ class AccountServiceImplTest {
         accounts.add(account1);
 
         Account account2 = new Account();
-        account2.setId(snowflakeGenerator.next());
+        account2.setId(UUID.randomUUID());
         account2.setAccountType(AccountType.INCOME);
         account2.setOrganization(organization);
         account2.setName("Revenue");
@@ -209,14 +207,14 @@ class AccountServiceImplTest {
 
     @Test
     void getActiveAccountsTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Ackermann Oswald AG");
 
         List<Account> accounts = new ArrayList<>();
         Account account1 = new Account();
-        account1.setId(snowflakeGenerator.next());
+        account1.setId(UUID.randomUUID());
         account1.setAccountType(AccountType.LIABILITY);
         account1.setOrganization(organization);
         account1.setName("Notes Payable – Credit Line #2");
@@ -231,8 +229,8 @@ class AccountServiceImplTest {
 
     @Test
     void getAccount_existsTest(){
-        Long accountId = snowflakeGenerator.next();
-        Long organizationId = snowflakeGenerator.next();
+        UUID accountId = UUID.randomUUID();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Gottschalk Metzger OHG mbH");
@@ -251,7 +249,7 @@ class AccountServiceImplTest {
 
     @Test
     void getAccount_notExistsTest(){
-        Long accountId = snowflakeGenerator.next();
+        UUID accountId = UUID.randomUUID();
         Mockito.when(accountRepository.findById(accountId)).thenReturn(Optional.empty());
         Optional<AccountDto> result = accountService.getAccount(accountId);
         Assertions.assertThat(result).isEmpty();
@@ -259,7 +257,7 @@ class AccountServiceImplTest {
 
     @Test
     void deleteAccountWithTransactionsTest(){
-        Long accountId = snowflakeGenerator.next();
+        UUID accountId = UUID.randomUUID();
         TransactionLine transactionLine = new TransactionLine();
         Mockito.when(transactionLineRepository.findByAccountId(accountId)).thenReturn(List.of(transactionLine));
         Assertions

@@ -1,15 +1,16 @@
 package dev.mednikov.accounting.accounts.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.accounts.dto.AccountDto;
 import dev.mednikov.accounting.accounts.dto.AccountDtoMapper;
 import dev.mednikov.accounting.accounts.exceptions.AccountAlreadyExistsException;
+import dev.mednikov.accounting.accounts.exceptions.AccountCategoryNotFoundException;
 import dev.mednikov.accounting.accounts.exceptions.AccountDeletionException;
 import dev.mednikov.accounting.accounts.exceptions.AccountNotFoundException;
 import dev.mednikov.accounting.accounts.models.Account;
 import dev.mednikov.accounting.accounts.models.AccountCategory;
 import dev.mednikov.accounting.accounts.repositories.AccountCategoryRepository;
 import dev.mednikov.accounting.accounts.repositories.AccountRepository;
+import dev.mednikov.accounting.organizations.exceptions.OrganizationNotFoundException;
 import dev.mednikov.accounting.organizations.models.Organization;
 import dev.mednikov.accounting.organizations.repositories.OrganizationRepository;
 import dev.mednikov.accounting.transactions.repositories.TransactionLineRepository;
@@ -18,12 +19,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AccountServiceImpl implements AccountService {
 
     private final static AccountDtoMapper accountDtoMapper = new AccountDtoMapper();
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
 
     private final AccountRepository accountRepository;
     private final AccountCategoryRepository accountCategoryRepository;
@@ -43,26 +44,24 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto createAccount(AccountDto accountDto) {
-        Long organizationId = Long.valueOf(accountDto.getOrganizationId());
         String code = accountDto.getCode();
-        if (this.accountRepository.findByOrganizationIdAndCode(organizationId,code).isPresent()) {
+        if (this.accountRepository.findByOrganizationIdAndCode(accountDto.getOrganizationId(),code).isPresent()) {
             throw new AccountAlreadyExistsException();
         }
 
-        Organization organization = this.organizationRepository.getReferenceById(organizationId);
+        Organization organization = this.organizationRepository.findById(accountDto.getOrganizationId())
+                .orElseThrow(() -> new OrganizationNotFoundException());
 
         Account account = new Account();
         account.setCode(code);
         account.setName(accountDto.getName());
-        account.setId(snowflakeGenerator.next());
         account.setAccountType(accountDto.getAccountType());
         account.setOrganization(organization);
         account.setDeprecated(false);
 
         // Set category
         if (accountDto.getAccountCategoryId() != null) {
-            Long accountCategoryId = Long.valueOf(accountDto.getAccountCategoryId());
-            AccountCategory accountCategory = this.accountCategoryRepository.getReferenceById(accountCategoryId);
+            AccountCategory accountCategory = this.accountCategoryRepository.getReferenceById(accountDto.getAccountCategoryId());
             account.setAccountCategory(accountCategory);
         } else {
             account.setAccountCategory(null);
@@ -76,25 +75,23 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDto updateAccount(AccountDto accountDto) {
         Objects.requireNonNull(accountDto.getId());
-        Long accountId = Long.valueOf(accountDto.getId());
-        Account account = this.accountRepository.findById(accountId).orElseThrow(AccountNotFoundException::new);
+        Account account = this.accountRepository.findById(accountDto.getId()).orElseThrow(AccountNotFoundException::new);
 
         account.setName(accountDto.getName());
         account.setAccountType(accountDto.getAccountType());
         account.setDeprecated(accountDto.isDeprecated());
 
         if (!account.getCode().equals(accountDto.getCode())) {
-            Long organizationId = Long.valueOf(accountDto.getOrganizationId());
             String code = accountDto.getCode();
-            if (this.accountRepository.findByOrganizationIdAndCode(organizationId, code).isPresent()) {
+            if (this.accountRepository.findByOrganizationIdAndCode(accountDto.getOrganizationId(), code).isPresent()) {
                 throw new AccountAlreadyExistsException();
             }
             account.setCode(code);
         }
 
         if (accountDto.getAccountCategoryId() != null) {
-            Long accountCategoryId = Long.valueOf(accountDto.getAccountCategoryId());
-            AccountCategory accountCategory = this.accountCategoryRepository.getReferenceById(accountCategoryId);
+            AccountCategory accountCategory = this.accountCategoryRepository.findById(accountDto.getAccountCategoryId())
+                    .orElseThrow(() -> new AccountCategoryNotFoundException());
             account.setAccountCategory(accountCategory);
         } else {
             account.setAccountCategory(null);
@@ -105,7 +102,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void deleteAccount(Long id) {
+    public void deleteAccount(UUID id) {
         if (this.transactionLineRepository.findByAccountId(id).isEmpty()){
             this.accountRepository.deleteById(id);
         } else {
@@ -114,7 +111,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountDto> getAccounts(Long organizationId, boolean includeDeprecated) {
+    public List<AccountDto> getAccounts(UUID organizationId, boolean includeDeprecated) {
         if (includeDeprecated) {
             return this.accountRepository.findAllByOrganizationId(organizationId)
                     .stream()
@@ -129,7 +126,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<AccountDto> getAccount(Long id) {
+    public Optional<AccountDto> getAccount(UUID id) {
         return this.accountRepository.findById(id).map(accountDtoMapper);
     }
 }

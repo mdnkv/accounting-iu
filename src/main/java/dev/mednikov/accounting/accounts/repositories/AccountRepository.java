@@ -7,17 +7,18 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends JpaRepository<Account, UUID> {
 
-    Optional<Account> findByOrganizationIdAndCode (Long organizationId, String code);
+    Optional<Account> findByOrganizationIdAndCode (UUID organizationId, String code);
 
     @Query("SELECT ac FROM Account ac WHERE ac.organization.id = :organizationId ORDER BY ac.code")
-    List<Account> findAllByOrganizationId(Long organizationId);
+    List<Account> findAllByOrganizationId(UUID organizationId);
 
     @Query("SELECT ac FROM Account ac WHERE ac.organization.id = :organizationId AND ac.deprecated = false ORDER BY ac.code")
-    List<Account> findActiveByOrganizationId(Long organizationId);
+    List<Account> findActiveByOrganizationId(UUID organizationId);
 
     @Query("""
     SELECT ac FROM Account ac
@@ -26,5 +27,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     AND ac.accountType IN ('ASSET', 'LIABILITY', 'EQUITY')
     ORDER BY ac.code ASC
 """)
-    List<Account> findBalanceSheetAccounts (Long organizationId);
+    List<Account> findBalanceSheetAccounts (UUID organizationId);
 }

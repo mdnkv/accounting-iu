@@ -2,18 +2,20 @@ package dev.mednikov.accounting.organizations.dto;
 
 import dev.mednikov.accounting.roles.dto.RoleDto;
 
+import java.util.UUID;
+
 public final class UserOrganizationDto {
 
-    private String id;
+    private UUID id;
     private OrganizationDto organization;
     private RoleDto role;
     private boolean active;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

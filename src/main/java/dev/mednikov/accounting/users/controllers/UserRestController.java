@@ -1,7 +1,5 @@
 package dev.mednikov.accounting.users.controllers;
 
-import dev.mednikov.accounting.users.dto.CurrentUserDto;
-import dev.mednikov.accounting.users.dto.CurrentUserDtoMapper;
 import dev.mednikov.accounting.users.dto.UserDto;
 import dev.mednikov.accounting.users.dto.UserDtoMapper;
 import dev.mednikov.accounting.users.models.User;
@@ -25,9 +23,7 @@ public class UserRestController {
 
     @GetMapping("/current")
     public @ResponseBody UserDto getCurrentUser(@AuthenticationPrincipal Jwt jwt){
-        CurrentUserDtoMapper currentUserDtoMapper = new CurrentUserDtoMapper();
-        CurrentUserDto currentUserDto = currentUserDtoMapper.apply(jwt);
-        User currentUser = this.userService.getOrCreateUser(currentUserDto);
+        User currentUser = this.userService.getOrCreateUser(jwt);
         UserDtoMapper mapper = new UserDtoMapper();
         return mapper.apply(currentUser);
     }

@@ -9,8 +9,11 @@ public final class OrganizationDtoMapper implements Function<Organization, Organ
     @Override
     public OrganizationDto apply(Organization organization) {
         OrganizationDto organizationDto = new OrganizationDto();
-        organizationDto.setId(organization.getId().toString());
+        organizationDto.setId(organization.getId());
         organizationDto.setName(organization.getName());
+        organizationDto.setCountry(organization.getCountry());
+        organizationDto.setActive(organization.isActive());
+        organizationDto.setTaxNumber(organization.getTaxNumber());
         return organizationDto;
     }
 }

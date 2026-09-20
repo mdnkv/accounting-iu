@@ -19,9 +19,9 @@ public final class OrganizationUserDtoMapper implements Function<OrganizationUse
         OrganizationUserDto result = new OrganizationUserDto();
         UserDto user = userDtoMapper.apply(organizationUser.getUser());
         result.setRole(role);
-        result.setId(organizationUser.getId().toString());
+        result.setId(organizationUser.getId());
         result.setRoleId(role.getId());
-        result.setOrganizationId(organizationUser.getOrganization().getId().toString());
+        result.setOrganizationId(organizationUser.getOrganization().getId());
         result.setUser(user);
         return result;
     }

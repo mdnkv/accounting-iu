@@ -11,16 +11,17 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(
-        name = "roles",
+        name = "roles_role",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "organization_id"})}
 )
 public class Role {
 
-    @Id
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
     private String name;
@@ -67,11 +68,11 @@ public class Role {
         return result;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

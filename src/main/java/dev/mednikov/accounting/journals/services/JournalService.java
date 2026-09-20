@@ -4,6 +4,7 @@ import dev.mednikov.accounting.journals.dto.JournalDto;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface JournalService {
 
@@ -11,10 +12,10 @@ public interface JournalService {
 
     JournalDto updateJournal(JournalDto journalDto);
 
-    void deleteJournal (Long journalId);
+    void deleteJournal (UUID journalId);
 
-    List<JournalDto> getJournals (Long organizationId);
+    List<JournalDto> getJournals (UUID organizationId);
 
-    Optional<JournalDto> getJournal (Long journalId);
+    Optional<JournalDto> getJournal (UUID journalId);
 
 }

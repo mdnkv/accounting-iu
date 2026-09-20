@@ -6,12 +6,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface AccountCategoryRepository extends JpaRepository<AccountCategory, Long> {
+public interface AccountCategoryRepository extends JpaRepository<AccountCategory, UUID> {
 
-    List<AccountCategory> findByOrganizationId(Long organizationId);
+    List<AccountCategory> findByOrganizationId(UUID organizationId);
 
-    Optional<AccountCategory> findByOrganizationIdAndName(Long organizationId, String name);
+    Optional<AccountCategory> findByOrganizationIdAndName(UUID organizationId, String name);
 
 }

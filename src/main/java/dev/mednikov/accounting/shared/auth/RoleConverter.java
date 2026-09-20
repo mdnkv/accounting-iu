@@ -3,8 +3,6 @@ package dev.mednikov.accounting.shared.auth;
 import dev.mednikov.accounting.authorities.models.Authority;
 import dev.mednikov.accounting.organizations.models.OrganizationUser;
 import dev.mednikov.accounting.organizations.repositories.OrganizationUserRepository;
-import dev.mednikov.accounting.users.dto.CurrentUserDto;
-import dev.mednikov.accounting.users.dto.CurrentUserDtoMapper;
 import dev.mednikov.accounting.users.models.User;
 import dev.mednikov.accounting.users.services.UserService;
 import org.springframework.context.annotation.Profile;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @Profile({"dev", "prod"})
@@ -33,13 +32,11 @@ public class RoleConverter implements Converter<Jwt, AbstractAuthenticationToken
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
-        CurrentUserDtoMapper currentUserDtoMapper = new CurrentUserDtoMapper();
-        CurrentUserDto currentUserDto = currentUserDtoMapper.apply(jwt);
-        User user = this.userService.getOrCreateUser(currentUserDto);
+        User user = this.userService.getOrCreateUser(jwt);
         Optional<OrganizationUser> currentActive = this.organizationUserRepository.findActiveForUser(user.getId());
         if (currentActive.isPresent()) {
             OrganizationUser result = currentActive.get();
-            Long organizationId = result.getOrganization().getId();
+            UUID organizationId = result.getOrganization().getId();
             // Map authorities to Spring GrantedAuthority objects
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
             for (Authority authority: result.getRole().getAuthorities()) {

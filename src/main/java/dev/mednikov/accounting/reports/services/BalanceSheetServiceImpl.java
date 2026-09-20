@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class BalanceSheetServiceImpl implements BalanceSheetService {
@@ -38,7 +39,7 @@ public class BalanceSheetServiceImpl implements BalanceSheetService {
     }
 
     @Override
-    public BalanceSheetDto getBalanceSheet(Long organizationId, LocalDate date) {
+    public BalanceSheetDto getBalanceSheet(UUID organizationId, LocalDate date) {
 //
 //        // Retrieve primary currency
 //        Currency primaryCurrency = this.currencyRepository.findPrimaryCurrency(organizationId).orElseThrow(CurrencyNotFoundException::new);

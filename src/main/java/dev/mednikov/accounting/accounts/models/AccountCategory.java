@@ -7,16 +7,17 @@ import org.hibernate.annotations.*;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(
-        name = "account_categories",
+        name = "accounts_account_category",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"organization_id", "name"})}
 )
 public class AccountCategory {
 
-    @Id
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
     private String name;
@@ -56,11 +57,11 @@ public class AccountCategory {
         return result;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

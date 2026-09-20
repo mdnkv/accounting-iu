@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.currencies.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.currencies.dto.CurrencyDto;
 import dev.mednikov.accounting.currencies.exceptions.CurrencyAlreadyExistsException;
 import dev.mednikov.accounting.currencies.exceptions.CurrencyNotFoundException;
@@ -20,11 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class CurrencyServiceImplTest {
-
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
 
     @Mock private OrganizationRepository organizationRepository;
     @Mock private CurrencyRepository currencyRepository;
@@ -34,12 +32,12 @@ class CurrencyServiceImplTest {
 
     @Test
     void createCurrency_alreadyExistsTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Wilhelm Stiftung & Co. KGaA");
 
-        Long currencyId = snowflakeGenerator.next();
+        UUID currencyId = UUID.randomUUID();
         String code = "EUR";
         Currency currency = new Currency();
         currency.setId(currencyId);
@@ -49,7 +47,7 @@ class CurrencyServiceImplTest {
         currency.setCode(code);
 
         CurrencyDto payload = new CurrencyDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName("Euro");
         payload.setCode(code);
 
@@ -62,12 +60,12 @@ class CurrencyServiceImplTest {
 
     @Test
     void createCurrency_successTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Bach Lindner Gmbh");
 
-        Long currencyId = snowflakeGenerator.next();
+        UUID currencyId = UUID.randomUUID();
         String code = "EUR";
         Currency currency = new Currency();
         currency.setId(currencyId);
@@ -77,11 +75,11 @@ class CurrencyServiceImplTest {
         currency.setCode(code);
 
         CurrencyDto payload = new CurrencyDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName("Euro");
         payload.setCode(code);
 
-        Mockito.when(organizationRepository.getReferenceById(organizationId)).thenReturn(organization);
+        Mockito.when(organizationRepository.findById(organizationId)).thenReturn(Optional.of(organization));
         Mockito.when(currencyRepository.findByCodeAndOrganizationId(code, organizationId)).thenReturn(Optional.empty());
         Mockito.when(currencyRepository.findAllByOrganizationId(organizationId)).thenReturn(List.of());
         Mockito.when(currencyRepository.save(Mockito.any())).thenReturn(currency);
@@ -92,12 +90,12 @@ class CurrencyServiceImplTest {
 
     @Test
     void getPrimaryCurrency_existsTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Böhm Metz GmbH");
 
-        Long currencyId = snowflakeGenerator.next();
+        UUID currencyId = UUID.randomUUID();
         String code = "EUR";
         Currency currency = new Currency();
         currency.setId(currencyId);
@@ -113,7 +111,7 @@ class CurrencyServiceImplTest {
 
     @Test
     void getPrimaryCurrency_doesNotExistTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Mockito.when(currencyRepository.findPrimaryCurrency(organizationId)).thenReturn(Optional.empty());
         Optional<CurrencyDto> result = currencyService.getPrimaryCurrency(organizationId);
         Assertions.assertThat(result).isEmpty();
@@ -121,12 +119,12 @@ class CurrencyServiceImplTest {
 
     @Test
     void updateCurrency_notFoundTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long currencyId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID currencyId = UUID.randomUUID();
 
         CurrencyDto payload = new CurrencyDto();
-        payload.setId(currencyId.toString());
-        payload.setOrganizationId(organizationId.toString());
+        payload.setId(currencyId);
+        payload.setOrganizationId(organizationId);
         payload.setName("Euro");
         payload.setCode("EUR");
         payload.setPrimary(false);
@@ -137,13 +135,13 @@ class CurrencyServiceImplTest {
 
     @Test
     void updateCurrency_alreadyExistsTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long currencyId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID currencyId = UUID.randomUUID();
         String code = "CHF";
 
         CurrencyDto payload = new CurrencyDto();
-        payload.setId(currencyId.toString());
-        payload.setOrganizationId(organizationId.toString());
+        payload.setId(currencyId);
+        payload.setOrganizationId(organizationId);
         payload.setName("Euro");
         payload.setCode(code);
         payload.setPrimary(true);
@@ -166,12 +164,12 @@ class CurrencyServiceImplTest {
 
     @Test
     void updateCurrency_successTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long currencyId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID currencyId = UUID.randomUUID();
 
         CurrencyDto payload = new CurrencyDto();
-        payload.setId(currencyId.toString());
-        payload.setOrganizationId(organizationId.toString());
+        payload.setId(currencyId);
+        payload.setOrganizationId(organizationId);
         payload.setName("Euro");
         payload.setCode("EUR");
         payload.setPrimary(true);
@@ -195,8 +193,8 @@ class CurrencyServiceImplTest {
 
     @Test
     void deleteCurrency_primaryCurrencyTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long currencyId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID currencyId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -215,8 +213,8 @@ class CurrencyServiceImplTest {
 
     @Test
     void deleteCurrency_hasTransactionsTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long currencyId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID currencyId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);

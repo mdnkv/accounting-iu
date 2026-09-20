@@ -3,28 +3,29 @@ package dev.mednikov.accounting.transactions.dto;
 import dev.mednikov.accounting.accounts.dto.AccountDto;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public final class TransactionLineDto {
 
-    private String id;
-    private String accountId;
+    private UUID id;
+    private UUID accountId;
     private AccountDto account;
     private BigDecimal creditAmount;
     private BigDecimal debitAmount;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public String getAccountId() {
+    public UUID getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(String accountId) {
+    public void setAccountId(UUID accountId) {
         this.accountId = accountId;
     }
 

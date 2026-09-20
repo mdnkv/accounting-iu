@@ -4,18 +4,20 @@ import dev.mednikov.accounting.accounts.models.AccountType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public final class AccountCategoryDto {
 
-    private String id;
+    private UUID id;
     @NotNull @NotBlank private String name;
-    @NotNull @NotBlank private String organizationId;
+    @NotNull @NotBlank private UUID organizationId;
     @NotNull private AccountType accountType;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -27,11 +29,11 @@ public final class AccountCategoryDto {
         this.name = name;
     }
 
-    public String getOrganizationId() {
+    public UUID getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(String organizationId) {
+    public void setOrganizationId(UUID organizationId) {
         this.organizationId = organizationId;
     }
 

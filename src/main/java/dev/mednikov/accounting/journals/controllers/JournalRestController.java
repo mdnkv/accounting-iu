@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/journals")
@@ -37,19 +38,19 @@ public class JournalRestController {
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('journals:delete')")
-    public void deleteJournal(@PathVariable Long id) {
+    public void deleteJournal(@PathVariable UUID id) {
         this.journalService.deleteJournal(id);
     }
 
     @GetMapping("/organization/{organizationId}")
     @PreAuthorize("hasAuthority('journals:view') and hasAuthority(#organizationId)")
-    public @ResponseBody List<JournalDto> getJournals(@PathVariable Long organizationId) {
+    public @ResponseBody List<JournalDto> getJournals(@PathVariable UUID organizationId) {
         return this.journalService.getJournals(organizationId);
     }
 
     @GetMapping("/journal/{id}")
     @PreAuthorize("hasAuthority('journals:view')")
-    public ResponseEntity<JournalDto> getJournal(@PathVariable Long id) {
+    public ResponseEntity<JournalDto> getJournal(@PathVariable UUID id) {
         Optional<JournalDto> result = this.journalService.getJournal(id);
         return ResponseEntity.of(result);
     }

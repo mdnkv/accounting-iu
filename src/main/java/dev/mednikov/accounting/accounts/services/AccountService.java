@@ -4,6 +4,7 @@ import dev.mednikov.accounting.accounts.dto.AccountDto;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface AccountService {
 
@@ -11,10 +12,10 @@ public interface AccountService {
 
     AccountDto updateAccount(AccountDto accountDto);
 
-    void deleteAccount(Long id);
+    void deleteAccount(UUID id);
 
-    List<AccountDto> getAccounts(Long organizationId, boolean includeDeprecated);
+    List<AccountDto> getAccounts(UUID organizationId, boolean includeDeprecated);
 
-    Optional<AccountDto> getAccount(Long id);
+    Optional<AccountDto> getAccount(UUID id);
 
 }

@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.shared.bootstrap;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mednikov.accounting.journals.models.Journal;
@@ -20,7 +19,6 @@ import java.util.List;
 @Service
 public class JournalBootstrapService {
 
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
     private final static Logger logger = LoggerFactory.getLogger(JournalBootstrapService.class);
 
     private final ObjectMapper objectMapper;
@@ -44,7 +42,6 @@ public class JournalBootstrapService {
             List<Journal> journals = new ArrayList<>();
             for (Journal item : data) {
                 Journal journal = new Journal();
-                journal.setId(snowflakeGenerator.next());
                 journal.setName(item.getName());
                 journal.setOrganization(organization);
                 journal.setActive(true);

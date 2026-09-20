@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/currencies")
@@ -36,13 +37,13 @@ public class CurrencyRestController {
 
     @GetMapping("/organization/{organizationId}")
     @PreAuthorize("hasAuthority('currencies:view') and hasAuthority(#organizationId)")
-    public @ResponseBody List<CurrencyDto> getCurrencies(@PathVariable Long organizationId){
+    public @ResponseBody List<CurrencyDto> getCurrencies(@PathVariable UUID organizationId){
         return this.currencyService.getCurrencies(organizationId);
     }
 
     @GetMapping("/primary/{organizationId}")
     @PreAuthorize("hasAuthority('currencies:view') and hasAuthority(#organizationId)")
-    public ResponseEntity<CurrencyDto> getPrimaryCurrency(@PathVariable Long organizationId){
+    public ResponseEntity<CurrencyDto> getPrimaryCurrency(@PathVariable UUID organizationId){
         Optional<CurrencyDto> result = this.currencyService.getPrimaryCurrency(organizationId);
         return ResponseEntity.of(result);
     }
@@ -50,7 +51,7 @@ public class CurrencyRestController {
     @DeleteMapping("/delete/{currencyId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('currencies:delete')")
-    public void deleteCurrency(@PathVariable Long currencyId){
+    public void deleteCurrency(@PathVariable UUID currencyId){
         this.currencyService.deleteCurrency(currencyId);
     }
 

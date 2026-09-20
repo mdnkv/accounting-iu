@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/reports")
@@ -26,7 +27,7 @@ public class ReportRestController {
     @GetMapping("/balance-sheet/{organizationId}")
     @PreAuthorize("hasAuthority(#organizationId) and hasAuthority('reports:view')")
     public @ResponseBody BalanceSheetDto getBalanceSheet (
-            @PathVariable Long organizationId,
+            @PathVariable UUID organizationId,
             @RequestParam(required = false) LocalDate date) {
         // return the balance sheet for current date if no date provided
         return this.balanceSheetService.getBalanceSheet(organizationId, Objects.requireNonNullElseGet(date, LocalDate::now));
@@ -35,7 +36,7 @@ public class ReportRestController {
     @GetMapping("/profit-loss/{organizationId}")
     @PreAuthorize("hasAuthority(#organizationId) and hasAuthority('reports:view')")
     public @ResponseBody ProfitLossDto getProfitLoss (
-            @PathVariable Long organizationId,
+            @PathVariable UUID organizationId,
             @RequestParam LocalDate fromDate,
             @RequestParam LocalDate toDate) {
         return this.profitLossService.getProfitLoss(organizationId, fromDate, toDate);

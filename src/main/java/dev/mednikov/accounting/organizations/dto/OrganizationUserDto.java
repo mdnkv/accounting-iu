@@ -3,19 +3,21 @@ package dev.mednikov.accounting.organizations.dto;
 import dev.mednikov.accounting.roles.dto.RoleDto;
 import dev.mednikov.accounting.users.dto.UserDto;
 
+import java.util.UUID;
+
 public final class OrganizationUserDto {
 
-    private String id;
-    private String organizationId;
-    private String roleId;
+    private UUID id;
+    private UUID organizationId;
+    private UUID roleId;
     private RoleDto role;
     private UserDto user;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -27,19 +29,19 @@ public final class OrganizationUserDto {
         this.role = role;
     }
 
-    public String getOrganizationId() {
+    public UUID getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(String organizationId) {
+    public void setOrganizationId(UUID organizationId) {
         this.organizationId = organizationId;
     }
 
-    public String getRoleId() {
+    public UUID getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(String roleId) {
+    public void setRoleId(UUID roleId) {
         this.roleId = roleId;
     }
 

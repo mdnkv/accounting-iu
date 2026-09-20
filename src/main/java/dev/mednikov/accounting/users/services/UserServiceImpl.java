@@ -1,19 +1,17 @@
 package dev.mednikov.accounting.users.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
-import dev.mednikov.accounting.users.dto.CurrentUserDto;
 import dev.mednikov.accounting.users.events.UserCreatedEvent;
 import dev.mednikov.accounting.users.models.User;
 import dev.mednikov.accounting.users.repositories.UserRepository;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
-
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
 
     private final ApplicationEventPublisher eventPublisher;
     private final UserRepository userRepository;
@@ -24,23 +22,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getOrCreateUser(CurrentUserDto currentUserRequest) {
-        Optional<User> result = this.userRepository.findByKeycloakId(currentUserRequest.getAuthId());
+    public User getOrCreateUser(Jwt principal) {
+        UUID keycloakId = UUID.fromString(principal.getSubject());
+        Optional<User> result = this.userRepository.findByKeycloakId(keycloakId);
 
         if (result.isPresent()) {
             // Check that user was updated
             boolean updated = false;
             User user = result.get();
-            if (!user.getFirstName().equals(currentUserRequest.getFirstName())){
-                user.setFirstName(currentUserRequest.getFirstName());
+            if (!user.getFirstName().equals(principal.getClaim("given_name"))) {
+                user.setFirstName(principal.getClaim("given_name"));
                 updated = true;
             }
-            if (!user.getLastName().equals(currentUserRequest.getLastName())){
-                user.setLastName(currentUserRequest.getLastName());
+            if (!user.getLastName().equals(principal.getClaim("family_name"))){
+                user.setLastName(principal.getClaim("family_name"));
                 updated = true;
             }
-            if (!user.getEmail().equals(currentUserRequest.getEmail())){
-                user.setEmail(currentUserRequest.getEmail());
+            if (!user.getEmail().equals(principal.getClaim("email"))){
+                user.setEmail(principal.getClaim("email"));
+                updated = true;
+            }
+            if (!user.isEmailVerified() == principal.getClaimAsBoolean("email_verified")) {
+                user.setEmailVerified(principal.getClaimAsBoolean("email_verified"));
                 updated = true;
             }
 
@@ -53,13 +56,17 @@ public class UserServiceImpl implements UserService {
         } else {
             // Create user
             User user = new User();
-            user.setEmail(currentUserRequest.getEmail());
-            user.setFirstName(currentUserRequest.getFirstName());
-            user.setLastName(currentUserRequest.getLastName());
-            user.setKeycloakId(currentUserRequest.getAuthId());
-            user.setId(snowflakeGenerator.next());
+            user.setEmail(principal.getClaim("email"));
+            user.setFirstName(principal.getClaim("given_name"));
+            user.setLastName(principal.getClaim("family_name"));
+            user.setKeycloakId(keycloakId);
+            user.setPremium(false);
+            user.setEmailVerified(principal.getClaimAsBoolean("email_verified"));
             user.setActive(true);
             user.setSuperuser(false);
+
+            // todo set avatar
+            user.setAvatarUrl("avatar");
 
             User savedUser = this.userRepository.save(user);
 

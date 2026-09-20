@@ -8,16 +8,17 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(
-        name = "invitations",
+        name = "organizations_invitation",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "organization_id"})}
 )
 public class Invitation {
 
-    @Id
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
     private String email;
@@ -54,11 +55,11 @@ public class Invitation {
         return result;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

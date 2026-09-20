@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/authorities")
@@ -35,13 +36,13 @@ public class AuthorityRestController {
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('authorities:delete')")
-    public void deleteAuthority (@PathVariable Long id){
+    public void deleteAuthority (@PathVariable UUID id){
         this.authorityService.deleteAuthority(id);
     }
 
     @GetMapping("/organization/{organizationId}")
     @PreAuthorize("hasAuthority('authorities:view') and hasAuthority(#organizationId)")
-    public @ResponseBody List<AuthorityDto> getAuthorities(@PathVariable Long organizationId){
+    public @ResponseBody List<AuthorityDto> getAuthorities(@PathVariable UUID organizationId){
         return this.authorityService.getAuthorities(organizationId);
     }
 

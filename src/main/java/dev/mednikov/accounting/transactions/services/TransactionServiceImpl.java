@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.transactions.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.accounts.exceptions.AccountNotFoundException;
 import dev.mednikov.accounting.accounts.exceptions.DeprecatedAccountException;
 import dev.mednikov.accounting.accounts.models.Account;
@@ -13,9 +12,9 @@ import dev.mednikov.accounting.currencies.repositories.CurrencyRepository;
 import dev.mednikov.accounting.journals.exceptions.JournalNotFoundException;
 import dev.mednikov.accounting.journals.models.Journal;
 import dev.mednikov.accounting.journals.repositories.JournalRepository;
+import dev.mednikov.accounting.organizations.exceptions.OrganizationNotFoundException;
 import dev.mednikov.accounting.organizations.models.Organization;
 import dev.mednikov.accounting.organizations.repositories.OrganizationRepository;
-import dev.mednikov.accounting.shared.exceptions.AccessDeniedException;
 import dev.mednikov.accounting.transactions.dto.TransactionDto;
 import dev.mednikov.accounting.transactions.dto.TransactionDtoMapper;
 import dev.mednikov.accounting.transactions.dto.TransactionLineDto;
@@ -32,11 +31,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
     private final static TransactionDtoMapper transactionDtoMapper = new TransactionDtoMapper();
 
     private final CurrencyRepository currencyRepository;
@@ -78,21 +77,25 @@ public class TransactionServiceImpl implements TransactionService {
             throw new UnbalancedTransactionException();
         }
         // Get organization
-        Long organizationId = Long.valueOf(payload.getOrganizationId());
-        Organization organization = this.organizationRepository.getReferenceById(organizationId);
+//        Long organizationId = Long.valueOf(payload.getOrganizationId());
+//        Organization organization = this.organizationRepository.getReferenceById(organizationId);
+        UUID organizationId = payload.getOrganizationId();
+        Organization organization = this.organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException());
         // Get currency
-        Long currencyId = Long.valueOf(payload.getCurrencyId());
-        Currency targetCurrency = this.currencyRepository.findById(currencyId).orElseThrow(CurrencyNotFoundException::new);
+//        Long currencyId = Long.valueOf(payload.getCurrencyId());
+        Currency targetCurrency = this.currencyRepository.findById(payload.getCurrencyId()).orElseThrow(CurrencyNotFoundException::new);
         if (targetCurrency.isDeprecated()){
             throw new DeprecatedCurrencyException();
         }
         if (!targetCurrency.getOrganization().getId().equals(organizationId)){
-            throw new AccessDeniedException();
+            // todo check for currency ownership
+            throw new RuntimeException();
         }
         Currency baseCurrency = this.currencyRepository.findPrimaryCurrency(organizationId).orElseThrow(CurrencyNotFoundException::new);
         // Create transaction
         Transaction transaction = new Transaction();
-        transaction.setId(snowflakeGenerator.next());
+//        transaction.setId(snowflakeGenerator.next());
         transaction.setOrganization(organization);
         transaction.setDescription(payload.getDescription());
         transaction.setDate(payload.getDate());
@@ -114,10 +117,11 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setOriginalTotalDebitAmount(debitAmount);
 
         // Set journal
-        Long journalId = Long.valueOf(payload.getJournalId());
-        Journal journal = this.journalRepository.findById(journalId).orElseThrow(JournalNotFoundException::new);
+//        Long journalId = Long.valueOf(payload.getJournalId());
+        Journal journal = this.journalRepository.findById(payload.getJournalId()).orElseThrow(JournalNotFoundException::new);
         if (!journal.getOrganization().getId().equals(organizationId)){
-            throw new AccessDeniedException();
+            // Todo check for journal ownership
+            throw new RuntimeException();
         }
         transaction.setJournal(journal);
 
@@ -126,13 +130,14 @@ public class TransactionServiceImpl implements TransactionService {
         // Process transaction lines
         List<TransactionLine> lines = new ArrayList<>();
         for (TransactionLineDto lineDto: payload.getLines()) {
-            Long accountId = Long.valueOf(lineDto.getAccountId());
-            Account account = this.accountRepository.findById(accountId).orElseThrow(AccountNotFoundException::new);
+//            Long accountId = Long.valueOf(lineDto.getAccountId());
+            Account account = this.accountRepository.findById(lineDto.getAccountId()).orElseThrow(AccountNotFoundException::new);
             if (account.isDeprecated()){
                 throw new DeprecatedAccountException();
             }
             if (!account.getOrganization().getId().equals(organizationId)){
-                throw new AccessDeniedException();
+                // Todo check for account ownership
+                throw new RuntimeException();
             }
             // Create transaction line
             TransactionLine line = new TransactionLine();
@@ -152,7 +157,7 @@ public class TransactionServiceImpl implements TransactionService {
             // Target currency amount
             line.setOriginalCreditAmount(lineCreditAmount);
             line.setOriginalDebitAmount(lineDebitAmount);
-            line.setId(snowflakeGenerator.next());
+//            line.setId(snowflakeGenerator.next());
             // Add to list
             lines.add(line);
         }
@@ -173,7 +178,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionDto> getTransactions(Long organizationId) {
+    public List<TransactionDto> getTransactions(UUID organizationId) {
         return this.transactionRepository
                 .findAllByOrganizationId(organizationId)
                 .stream()
@@ -182,7 +187,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void deleteTransaction(Long transactionId) {
+    public void deleteTransaction(UUID transactionId) {
         // Only draft transaction can be removed
         Optional<Transaction> result = this.transactionRepository.findById(transactionId);
         if (result.isPresent()) {

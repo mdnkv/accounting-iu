@@ -4,6 +4,7 @@ import dev.mednikov.accounting.organizations.dto.OrganizationDto;
 import dev.mednikov.accounting.users.models.User;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface OrganizationService {
 
@@ -11,8 +12,8 @@ public interface OrganizationService {
 
     OrganizationDto updateOrganization(OrganizationDto organizationDto);
 
-    void deleteOrganization(Long id);
+    void deleteOrganization(UUID id);
 
-    Optional<OrganizationDto> getOrganization(Long id);
+    Optional<OrganizationDto> getOrganization(UUID id);
 
 }

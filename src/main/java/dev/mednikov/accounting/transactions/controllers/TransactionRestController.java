@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -32,14 +33,14 @@ public class TransactionRestController {
 
     @GetMapping("/organization/{organizationId}")
     @PreAuthorize("hasAuthority('transactions:view') and hasAuthority(#organizationId)")
-    public @ResponseBody List<TransactionDto> getAllTransactions(@PathVariable Long organizationId) {
+    public @ResponseBody List<TransactionDto> getAllTransactions(@PathVariable UUID organizationId) {
         return this.transactionService.getTransactions(organizationId);
     }
 
     @DeleteMapping("/delete/{transactionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('transactions:delete')")
-    public void deleteTransaction(@PathVariable Long transactionId) {
+    public void deleteTransaction(@PathVariable UUID transactionId) {
         this.transactionService.deleteTransaction(transactionId);
     }
 

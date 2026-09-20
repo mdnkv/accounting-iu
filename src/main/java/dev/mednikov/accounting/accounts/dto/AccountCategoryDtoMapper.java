@@ -9,10 +9,10 @@ public final class AccountCategoryDtoMapper implements Function<AccountCategory,
     @Override
     public AccountCategoryDto apply(AccountCategory accountCategory) {
         AccountCategoryDto result = new AccountCategoryDto();
-        result.setId(accountCategory.getId().toString());
+        result.setId(accountCategory.getId());
         result.setName(accountCategory.getName());
         result.setAccountType(accountCategory.getAccountType());
-        result.setOrganizationId(accountCategory.getOrganization().getId().toString());
+        result.setOrganizationId(accountCategory.getOrganization().getId());
         return result;
     }
 

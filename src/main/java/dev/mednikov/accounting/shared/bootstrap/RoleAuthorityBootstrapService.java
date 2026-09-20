@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.shared.bootstrap;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mednikov.accounting.authorities.models.Authority;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 @Service
 public class RoleAuthorityBootstrapService {
 
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
     private final static Logger logger = LoggerFactory.getLogger(RoleAuthorityBootstrapService.class);
 
     private final ResourceLoader resourceLoader;
@@ -53,7 +51,6 @@ public class RoleAuthorityBootstrapService {
         for (String roleName: loaded){
            Role role = new Role();
            role.setName(roleName);
-           role.setId(snowflakeGenerator.next());
            role.setOrganization(organization);
            roles.add(role);
         }
@@ -67,7 +64,6 @@ public class RoleAuthorityBootstrapService {
             Authority authority = new Authority();
             authority.setName(authorityName);
             authority.setOrganization(organization);
-            authority.setId(snowflakeGenerator.next());
             authorities.add(authority);
         }
         return this.authorityRepository.saveAll(authorities);

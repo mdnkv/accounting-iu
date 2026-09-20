@@ -1,9 +1,10 @@
 package dev.mednikov.accounting.roles.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
+import dev.mednikov.accounting.authorities.dto.AuthorityDto;
 import dev.mednikov.accounting.authorities.exceptions.AuthorityNotFoundException;
 import dev.mednikov.accounting.authorities.models.Authority;
 import dev.mednikov.accounting.authorities.repositories.AuthorityRepository;
+import dev.mednikov.accounting.organizations.exceptions.OrganizationNotFoundException;
 import dev.mednikov.accounting.organizations.models.Organization;
 import dev.mednikov.accounting.organizations.repositories.OrganizationRepository;
 import dev.mednikov.accounting.roles.dto.RoleDto;
@@ -17,11 +18,11 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class RoleServiceImpl implements RoleService {
 
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
     private final static RoleDtoMapper mapper = new RoleDtoMapper();
 
     private final RoleRepository roleRepository;
@@ -36,24 +37,25 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDto createRole(RoleDto payload) {
-        Long organizationId = Long.valueOf(payload.getOrganizationId());
         String name = payload.getName();
 
-        if (this.roleRepository.findByNameAndOrganizationId(name, organizationId).isPresent()) {
+        if (this.roleRepository.findByNameAndOrganizationId(name, payload.getOrganizationId()).isPresent()) {
             throw new RoleAlreadyExistsException();
         }
 
-        Organization organization = this.organizationRepository.getReferenceById(organizationId);
+//        Organization organization = this.organizationRepository.getReferenceById(pa);
+        Organization organization = this.organizationRepository.findById(payload.getOrganizationId()).
+                orElseThrow(() -> new OrganizationNotFoundException());
+
         Role role = new Role();
         role.setName(name);
-        role.setId(snowflakeGenerator.next());
         role.setOrganization(organization);
 
         // Set authorities
         if (!payload.getAuthorities().isEmpty()){
-            List<Long> authoritiesIds = payload.getAuthorities()
+            List<UUID> authoritiesIds = payload.getAuthorities()
                     .stream()
-                    .map(dto -> Long.parseLong(dto.getId()))
+                    .map(AuthorityDto::getId)
                     .toList();
             List<Authority> authorities = this.authorityRepository.findAllById(authoritiesIds);
             role.setAuthorities(new HashSet<>(authorities));
@@ -66,13 +68,11 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDto updateRole(RoleDto payload) {
         Objects.requireNonNull(payload.getId());
-        Long roleId = Long.valueOf(payload.getId());
 
-        Role role = this.roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+        Role role = this.roleRepository.findById(payload.getId()).orElseThrow(RoleNotFoundException::new);
         if (!role.getName().equals(payload.getName())) {
             // name is changed, need to verify that no other role is present
-            Long organizationId = Long.valueOf(payload.getOrganizationId());
-            if (this.roleRepository.findByNameAndOrganizationId(payload.getName(), organizationId).isPresent()) {
+            if (this.roleRepository.findByNameAndOrganizationId(payload.getName(), payload.getOrganizationId()).isPresent()) {
                 throw new RoleAlreadyExistsException();
             }
         }
@@ -84,12 +84,12 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void deleteRole(Long id) {
+    public void deleteRole(UUID id) {
         this.roleRepository.deleteById(id);
     }
 
     @Override
-    public List<RoleDto> getRoles(Long organizationId) {
+    public List<RoleDto> getRoles(UUID organizationId) {
         return this.roleRepository.findByOrganizationId(organizationId)
                 .stream()
                 .map(mapper)
@@ -97,7 +97,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void addAuthorityToRole(Long roleId, Long authorityId) {
+    public void addAuthorityToRole(UUID roleId, UUID authorityId) {
         Role role = this.roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
         Authority authority = this.authorityRepository.findById(authorityId).orElseThrow(AuthorityNotFoundException::new);
         boolean result = role.getAuthorities().add(authority);
@@ -108,7 +108,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void removeAuthorityFromRole(Long roleId, Long authorityId) {
+    public void removeAuthorityFromRole(UUID roleId, UUID authorityId) {
         Role role = this.roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
         Authority authority = this.authorityRepository.findById(authorityId).orElseThrow(AuthorityNotFoundException::new);
         boolean deleted = role.getAuthorities().remove(authority);

@@ -7,15 +7,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface CurrencyRepository extends JpaRepository<Currency, Long> {
+public interface CurrencyRepository extends JpaRepository<Currency, UUID> {
 
-    List<Currency> findAllByOrganizationId (Long organizationId);
+    List<Currency> findAllByOrganizationId (UUID organizationId);
 
-    Optional<Currency> findByCodeAndOrganizationId (String code, Long organizationId);
+    Optional<Currency> findByCodeAndOrganizationId (String code, UUID organizationId);
 
     @Query("SELECT cu FROM Currency cu WHERE cu.organization.id = :organizationId AND cu.primary = true")
-    Optional<Currency> findPrimaryCurrency (Long organizationId);
+    Optional<Currency> findPrimaryCurrency (UUID organizationId);
 
 }

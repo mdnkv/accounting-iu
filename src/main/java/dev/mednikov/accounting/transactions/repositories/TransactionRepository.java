@@ -6,14 +6,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
     @Query("SELECT t FROM Transaction t WHERE t.organization.id = :organizationId ORDER BY t.date DESC")
-    List<Transaction> findAllByOrganizationId (Long organizationId);
+    List<Transaction> findAllByOrganizationId (UUID organizationId);
 
     @Query("SELECT COUNT(t) FROM Transaction t WHERE t.baseCurrency.id = :currencyId OR t.targetCurrency.id = :currencyId")
-    int countByCurrencyId (Long currencyId);
+    int countByCurrencyId (UUID currencyId);
 
 }

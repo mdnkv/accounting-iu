@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/account-categories")
@@ -35,13 +36,13 @@ public class AccountCategoryRestController {
     @DeleteMapping("/delete/{accountId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('accounts:delete')")
-    public void deleteAccountCategory(@PathVariable Long accountId) {
+    public void deleteAccountCategory(@PathVariable UUID accountId) {
         this.accountCategoryService.deleteAccountCategory(accountId);
     }
 
     @GetMapping("/organization/{organizationId}")
     @PreAuthorize("hasAuthority('accounts:view') and hasAuthority(#organizationId)")
-    public @ResponseBody List<AccountCategoryDto> getAccounts(@PathVariable Long organizationId ) {
+    public @ResponseBody List<AccountCategoryDto> getAccounts(@PathVariable UUID organizationId ) {
         return this.accountCategoryService.getAccountCategories(organizationId);
     }
 

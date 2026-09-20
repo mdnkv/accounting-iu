@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.shared.bootstrap;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mednikov.accounting.currencies.models.Currency;
@@ -20,7 +19,6 @@ import java.util.List;
 @Service
 public class CurrencyBootstrapService {
 
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
     private final static Logger logger = LoggerFactory.getLogger(CurrencyBootstrapService.class);
 
     private final CurrencyRepository currencyRepository;
@@ -46,7 +44,6 @@ public class CurrencyBootstrapService {
                 currency.setName(item.getName());
                 currency.setCode(item.getCode());
                 currency.setPrimary(item.isPrimary());
-                currency.setId(snowflakeGenerator.next());
                 currency.setOrganization(organization);
                 currencies.add(currency);
             }

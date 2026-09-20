@@ -3,6 +3,7 @@ package dev.mednikov.accounting.roles.services;
 import dev.mednikov.accounting.roles.dto.RoleDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface RoleService {
 
@@ -10,12 +11,12 @@ public interface RoleService {
 
     RoleDto updateRole (RoleDto payload);
 
-    void deleteRole (Long id);
+    void deleteRole (UUID id);
 
-    List<RoleDto> getRoles (Long organizationId);
+    List<RoleDto> getRoles (UUID organizationId);
 
-    void addAuthorityToRole (Long roleId, Long authorityId);
+    void addAuthorityToRole (UUID roleId, UUID authorityId);
 
-    void removeAuthorityFromRole (Long roleId, Long authorityId);
+    void removeAuthorityFromRole (UUID roleId, UUID authorityId);
 
 }

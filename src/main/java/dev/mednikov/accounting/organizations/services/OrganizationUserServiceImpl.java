@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.organizations.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.organizations.dto.*;
 import dev.mednikov.accounting.organizations.events.CreateOwnerEvent;
 import dev.mednikov.accounting.organizations.exceptions.OrganizationUserAlreadyExistsException;
@@ -20,18 +19,14 @@ import dev.mednikov.accounting.users.repositories.UserRepository;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class OrganizationUserServiceImpl implements OrganizationUserService {
 
     private final static OrganizationUserDtoMapper organizationUserDtoMapper = new OrganizationUserDtoMapper();
     private final static UserOrganizationDtoMapper userOrganizationDtoMapper = new UserOrganizationDtoMapper();
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
+//    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
 
     private final InvitationRepository invitationRepository;
     private final UserRepository userRepository;
@@ -63,7 +58,7 @@ public class OrganizationUserServiceImpl implements OrganizationUserService {
     }
 
     @Override
-    public UserOrganizationDto setActiveForUser(User user, Long id) {
+    public UserOrganizationDto setActiveForUser(User user, UUID id) {
         // Find current active
         Optional<OrganizationUser> currentActive = this.organizationUserRepository.findActiveForUser(user.getId());
         // Set current active as not active
@@ -90,9 +85,11 @@ public class OrganizationUserServiceImpl implements OrganizationUserService {
     public Optional<OrganizationUserDto> createOrganizationUser(CreateOrganizationUserRequestDto payload) {
         // Find user by email
         String email = payload.getEmail();
-        Long organizationId = Long.parseLong(payload.getOrganizationId());
+//        Long organizationId = Long.parseLong(payload.getOrganizationId());
+        UUID organizationId = payload.getOrganizationId();
         // Get a role
-        Long roleId = Long.parseLong(payload.getRoleId());
+//        Long roleId = Long.parseLong(payload.getRoleId());
+        UUID roleId = payload.getRoleId();
         Role role = this.roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
         // Get an organization
         Organization organization = this.organizationRepository.getReferenceById(organizationId);
@@ -111,7 +108,7 @@ public class OrganizationUserServiceImpl implements OrganizationUserService {
             organizationUser.setOrganization(organization);
             organizationUser.setRole(role);
             organizationUser.setUser(user);
-            organizationUser.setId(snowflakeGenerator.next());
+//            organizationUser.setId(snowflakeGenerator.next());
             organizationUser.setActive(active);
 
             OrganizationUser result = this.organizationUserRepository.save(organizationUser);
@@ -125,7 +122,7 @@ public class OrganizationUserServiceImpl implements OrganizationUserService {
                 invitation.setEmail(email);
                 invitation.setOrganization(organization);
                 invitation.setRole(role);
-                invitation.setId(snowflakeGenerator.next());
+//                invitation.setId(snowflakeGenerator.next());
                 this.invitationRepository.save(invitation);
             }
             return Optional.empty();
@@ -135,22 +132,20 @@ public class OrganizationUserServiceImpl implements OrganizationUserService {
     @Override
     public OrganizationUserDto updateOrganizationUser(OrganizationUserDto payload) {
         Objects.requireNonNull(payload.getId());
-        Long id = Long.parseLong(payload.getId());
-        Long roleId = Long.parseLong(payload.getRoleId());
-        OrganizationUser organizationUser = this.organizationUserRepository.findById(id).orElseThrow(OrganizationUserNotFoundException::new);
-        Role role = this.roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+        OrganizationUser organizationUser = this.organizationUserRepository.findById(payload.getId()).orElseThrow(OrganizationUserNotFoundException::new);
+        Role role = this.roleRepository.findById(payload.getRoleId()).orElseThrow(RoleNotFoundException::new);
         organizationUser.setRole(role);
         OrganizationUser result = this.organizationUserRepository.save(organizationUser);
         return organizationUserDtoMapper.apply(result);
     }
 
     @Override
-    public void deleteOrganizationUser(Long id) {
+    public void deleteOrganizationUser(UUID id) {
         this.organizationUserRepository.deleteById(id);
     }
 
     @Override
-    public List<OrganizationUserDto> getUsersInOrganization(Long organizationId) {
+    public List<OrganizationUserDto> getUsersInOrganization(UUID organizationId) {
         return this.organizationUserRepository
                 .findAllByOrganizationId(organizationId)
                 .stream()
@@ -170,7 +165,6 @@ public class OrganizationUserServiceImpl implements OrganizationUserService {
         organizationUser.setUser(user);
         organizationUser.setRole(event.getRole());
         organizationUser.setOrganization(event.getOrganization());
-        organizationUser.setId(snowflakeGenerator.next());
         this.organizationUserRepository.save(organizationUser);
     }
 
@@ -189,7 +183,6 @@ public class OrganizationUserServiceImpl implements OrganizationUserService {
                 OrganizationUser organizationUser = new OrganizationUser();
                 organizationUser.setRole(role);
                 organizationUser.setOrganization(organization);
-                organizationUser.setId(snowflakeGenerator.next());
                 organizationUser.setUser(user);
                 organizationUser.setActive(active);
                 organizationUsers.add(organizationUser);

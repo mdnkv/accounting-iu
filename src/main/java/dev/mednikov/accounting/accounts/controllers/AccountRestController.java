@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -37,14 +38,14 @@ public class AccountRestController {
     @DeleteMapping("/delete/{accountId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('accounts:delete')")
-    public void deleteAccount(@PathVariable Long accountId) {
+    public void deleteAccount(@PathVariable UUID accountId) {
         this.accountService.deleteAccount(accountId);
     }
 
     @GetMapping("/organization/{organizationId}")
     @PreAuthorize("hasAuthority('accounts:view') and hasAuthority(#organizationId)")
     public @ResponseBody List<AccountDto> getAccounts(
-            @PathVariable Long organizationId,
+            @PathVariable UUID organizationId,
             @RequestParam(defaultValue = "true", required = false) boolean includeDeprecated
     ) {
         return this.accountService.getAccounts(organizationId, includeDeprecated);
@@ -52,7 +53,7 @@ public class AccountRestController {
 
     @GetMapping("/account/{accountId}")
     @PreAuthorize("hasAuthority('accounts:view')")
-    public ResponseEntity<AccountDto> getAccount(@PathVariable Long accountId) {
+    public ResponseEntity<AccountDto> getAccount(@PathVariable UUID accountId) {
         Optional<AccountDto> accountDto = this.accountService.getAccount(accountId);
         return ResponseEntity.of(accountDto);
     }

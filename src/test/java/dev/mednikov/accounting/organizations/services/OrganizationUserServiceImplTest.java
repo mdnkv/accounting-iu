@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.organizations.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.organizations.dto.CreateOrganizationUserRequestDto;
 import dev.mednikov.accounting.organizations.dto.OrganizationUserDto;
 import dev.mednikov.accounting.organizations.dto.OrganizationUserDtoMapper;
@@ -32,7 +31,6 @@ import java.util.UUID;
 class OrganizationUserServiceImplTest {
 
     private final static OrganizationUserDtoMapper organizationUserDtoMapper = new OrganizationUserDtoMapper();
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
 
     @Mock private OrganizationUserRepository organizationUserRepository;
     @Mock private OrganizationRepository organizationRepository;
@@ -43,9 +41,9 @@ class OrganizationUserServiceImplTest {
 
     @Test
     void getActiveForUser_existsTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long userId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -68,7 +66,7 @@ class OrganizationUserServiceImplTest {
         organizationUser.setRole(role);
         organizationUser.setUser(user);
         organizationUser.setActive(true);
-        organizationUser.setId(snowflakeGenerator.next());
+        organizationUser.setId(UUID.randomUUID());
 
         Mockito.when(organizationUserRepository.findActiveForUser(userId)).thenReturn(Optional.of(organizationUser));
         Optional<UserOrganizationDto> result = organizationUserService.getActiveForUser(user);
@@ -77,7 +75,7 @@ class OrganizationUserServiceImplTest {
 
     @Test
     void getActiveForUser_notExistsTest(){
-        Long userId = snowflakeGenerator.next();
+        UUID userId = UUID.randomUUID();
 
         User user = new User();
         user.setId(userId);
@@ -93,10 +91,10 @@ class OrganizationUserServiceImplTest {
 
     @Test
     void setActiveForUser_successTest(){
-        Long userId = snowflakeGenerator.next();
-        Long organizationId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
-        Long organizationUserId = snowflakeGenerator.next();
+        UUID userId = UUID.randomUUID();
+        UUID organizationId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        UUID organizationUserId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -132,9 +130,9 @@ class OrganizationUserServiceImplTest {
     @Test
     void createOrganizationUser_alreadyExistsTest(){
         String email = "wolfdieter69@schuler.com";
-        Long organizationId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
-        Long userId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -156,12 +154,12 @@ class OrganizationUserServiceImplTest {
         organizationUser.setRole(role);
         organizationUser.setUser(user);
         organizationUser.setActive(true);
-        organizationUser.setId(snowflakeGenerator.next());
+        organizationUser.setId(UUID.randomUUID());
 
         CreateOrganizationUserRequestDto payload = new CreateOrganizationUserRequestDto();
         payload.setEmail(email);
-        payload.setOrganizationId(organizationId.toString());
-        payload.setRoleId(roleId.toString());
+        payload.setOrganizationId(organizationId);
+        payload.setRoleId(roleId);
 
         Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         Mockito.when(roleRepository.findById(roleId)).thenReturn(Optional.of(role));
@@ -173,9 +171,9 @@ class OrganizationUserServiceImplTest {
     @Test
     void createOrganizationUser_successTest(){
         String email = "annika.altmann@bergmann.com";
-        Long organizationId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
-        Long userId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -197,12 +195,12 @@ class OrganizationUserServiceImplTest {
         organizationUser.setRole(role);
         organizationUser.setUser(user);
         organizationUser.setActive(true);
-        organizationUser.setId(snowflakeGenerator.next());
+        organizationUser.setId(UUID.randomUUID());
 
         CreateOrganizationUserRequestDto payload = new CreateOrganizationUserRequestDto();
         payload.setEmail(email);
-        payload.setOrganizationId(organizationId.toString());
-        payload.setRoleId(roleId.toString());
+        payload.setOrganizationId(organizationId);
+        payload.setRoleId(roleId);
 
         Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         Mockito.when(organizationUserRepository.findByOrganizationIdAndUserId(organizationId, userId)).thenReturn(Optional.empty());
@@ -218,9 +216,9 @@ class OrganizationUserServiceImplTest {
     @Test
     void createOrganizationUser_withInvitationTest(){
         String email = "dietrich.silvana@hanke.de";
-        Long organizationId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
-        Long userId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -241,12 +239,12 @@ class OrganizationUserServiceImplTest {
         invitation.setEmail(email);
         invitation.setRole(role);
         invitation.setOrganization(organization);
-        invitation.setId(snowflakeGenerator.next());
+        invitation.setId(UUID.randomUUID());
 
         CreateOrganizationUserRequestDto payload = new CreateOrganizationUserRequestDto();
         payload.setEmail(email);
-        payload.setOrganizationId(organizationId.toString());
-        payload.setRoleId(roleId.toString());
+        payload.setOrganizationId(organizationId);
+        payload.setRoleId(roleId);
 
         Mockito.when(roleRepository.findById(roleId)).thenReturn(Optional.of(role));
         Mockito.when(organizationRepository.getReferenceById(organizationId)).thenReturn(organization);
@@ -261,10 +259,10 @@ class OrganizationUserServiceImplTest {
     @Test
     void updateOrganizationUserTest(){
         String email = "adler.kathrin@fleischmann.de";
-        Long organizationId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
-        Long userId = snowflakeGenerator.next();
-        Long organizationUserId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID organizationUserId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -300,7 +298,7 @@ class OrganizationUserServiceImplTest {
 
     @Test
     void getUsersInOrganizationTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Mockito.when(organizationUserRepository.findAllByOrganizationId(organizationId)).thenReturn(List.of());
         List<OrganizationUserDto> result = organizationUserService.getUsersInOrganization(organizationId);
         Assertions.assertThat(result).hasSize(0);

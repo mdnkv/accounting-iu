@@ -4,17 +4,19 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.UUID;
+
 public final class AuthorityDto {
 
-    private String id;
+    private UUID id;
     @NotNull @NotBlank @Length(max=255) private String name;
-    @NotNull @NotBlank private String organizationId;
+    @NotNull @NotBlank private UUID organizationId;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -26,11 +28,11 @@ public final class AuthorityDto {
         this.name = name;
     }
 
-    public String getOrganizationId() {
+    public UUID getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(String organizationId) {
+    public void setOrganizationId(UUID organizationId) {
         this.organizationId = organizationId;
     }
 }

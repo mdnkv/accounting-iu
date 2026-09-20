@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.shared.bootstrap;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mednikov.accounting.accounts.models.Account;
@@ -18,12 +17,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AccountBootstrapService {
 
     private final static Logger logger = LoggerFactory.getLogger(AccountBootstrapService.class);
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
 
     private final AccountCategoryRepository accountCategoryRepository;
     private final AccountRepository accountRepository;
@@ -64,7 +63,6 @@ public class AccountBootstrapService {
             category.setName(item.getName());
             category.setAccountType(item.getAccountType());
             category.setOrganization(organization);
-            category.setId(snowflakeGenerator.next());
             categories.add(category);
         }
         accountCategoryRepository.saveAll(categories);
@@ -75,7 +73,8 @@ public class AccountBootstrapService {
         Resource resource = this.resourceLoader.getResource("classpath:bootstrap/accounts.json");
         TypeReference<List<AccountBootstrapDto>> typeReference = new TypeReference<>() {};
         List<AccountBootstrapDto> data = this.objectMapper.readValue(resource.getInputStream(), typeReference);
-        Long organizationId = organization.getId();
+//        Long organizationId = organization.getId();
+        UUID organizationId = organization.getId();
         List<Account> accounts = new ArrayList<>();
         for (AccountBootstrapDto item : data) {
             Account account = new Account();
@@ -86,7 +85,6 @@ public class AccountBootstrapService {
             account.setCode(item.getCode());
             account.setName(item.getName());
             account.setAccountType(item.getAccountType());
-            account.setId(snowflakeGenerator.next());
             account.setDeprecated(false);
             accounts.add(account);
         }

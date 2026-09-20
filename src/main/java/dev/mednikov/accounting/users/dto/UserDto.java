@@ -1,17 +1,23 @@
 package dev.mednikov.accounting.users.dto;
 
+import java.util.UUID;
+
 public final class UserDto {
 
-    private String id;
+    private UUID id;
     private String firstName;
     private String lastName;
-    private String gravatarUrl;
+    private String avatarUrl;
+    private boolean active;
+    private boolean superuser;
+    private boolean premium;
+    private boolean emailVerified;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -31,11 +37,43 @@ public final class UserDto {
         this.lastName = lastName;
     }
 
-    public String getGravatarUrl() {
-        return gravatarUrl;
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 
-    public void setGravatarUrl(String gravatarUrl) {
-        this.gravatarUrl = gravatarUrl;
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isSuperuser() {
+        return superuser;
+    }
+
+    public void setSuperuser(boolean superuser) {
+        this.superuser = superuser;
+    }
+
+    public boolean isPremium() {
+        return premium;
+    }
+
+    public void setPremium(boolean premium) {
+        this.premium = premium;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 }

@@ -19,8 +19,8 @@ public final class TransactionDtoMapper implements Function<Transaction, Transac
         CurrencyDto currencyDto = currencyDtoMapper.apply(transaction.getTargetCurrency());
         List<TransactionLineDto> lines = transaction.getLines().stream().map(transactionLineDtoMapper).toList();
         TransactionDto result = new TransactionDto();
-        result.setId(transaction.getId().toString());
-        result.setOrganizationId(transaction.getOrganization().getId().toString());
+        result.setId(transaction.getId());
+        result.setOrganizationId(transaction.getOrganization().getId());
         result.setDescription(transaction.getDescription());
         result.setDate(transaction.getDate());
         result.setCurrencyId(currencyDto.getId());
@@ -29,7 +29,7 @@ public final class TransactionDtoMapper implements Function<Transaction, Transac
         result.setTotalCreditAmount(transaction.getOriginalTotalCreditAmount());
         result.setTotalDebitAmount(transaction.getOriginalTotalDebitAmount());
         result.setDraft(transaction.isDraft());
-        result.setJournalId(transaction.getJournal().getId().toString());
+        result.setJournalId(transaction.getJournal().getId());
         return result;
     }
 

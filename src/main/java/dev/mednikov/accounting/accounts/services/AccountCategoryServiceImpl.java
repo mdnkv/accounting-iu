@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.accounts.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.accounts.dto.AccountCategoryDto;
 import dev.mednikov.accounting.accounts.dto.AccountCategoryDtoMapper;
 import dev.mednikov.accounting.accounts.exceptions.AccountCategoryAlreadyExistsException;
@@ -14,11 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class AccountCategoryServiceImpl implements AccountCategoryService {
 
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
     private final AccountCategoryDtoMapper mapper = new AccountCategoryDtoMapper();
 
     private final OrganizationRepository organizationRepository;
@@ -31,12 +30,11 @@ public class AccountCategoryServiceImpl implements AccountCategoryService {
 
     @Override
     public AccountCategoryDto createAccountCategory(AccountCategoryDto accountCategoryDto) {
-        Long organizationId = Long.parseLong(accountCategoryDto.getOrganizationId());
-        Organization organization = this.organizationRepository.findById(organizationId)
+        Organization organization = this.organizationRepository.findById(accountCategoryDto.getOrganizationId())
                 .orElseThrow(OrganizationNotFoundException::new);
 
         String name = accountCategoryDto.getName();
-        if (this.accountCategoryRepository.findByOrganizationIdAndName(organizationId, name).isPresent()) {
+        if (this.accountCategoryRepository.findByOrganizationIdAndName(accountCategoryDto.getOrganizationId(), name).isPresent()) {
             throw new AccountCategoryAlreadyExistsException();
         }
 
@@ -44,7 +42,6 @@ public class AccountCategoryServiceImpl implements AccountCategoryService {
         accountCategory.setOrganization(organization);
         accountCategory.setName(name);
         accountCategory.setAccountType(accountCategoryDto.getAccountType());
-        accountCategory.setId(snowflakeGenerator.next());
 
         AccountCategory result = this.accountCategoryRepository.save(accountCategory);
         return mapper.apply(result);
@@ -53,15 +50,13 @@ public class AccountCategoryServiceImpl implements AccountCategoryService {
     @Override
     public AccountCategoryDto updateAccountCategory(AccountCategoryDto accountCategoryDto) {
         Objects.requireNonNull(accountCategoryDto.getId());
-        Long id = Long.parseLong(accountCategoryDto.getId());
-        AccountCategory accountCategory = this.accountCategoryRepository.findById(id)
+        AccountCategory accountCategory = this.accountCategoryRepository.findById(accountCategoryDto.getId())
                 .orElseThrow(AccountCategoryNotFoundException::new);
 
         // verify that the name is not occupied
         if (!accountCategory.getName().equals(accountCategoryDto.getName())) {
             String name = accountCategoryDto.getName();
-            Long organizationId = Long.parseLong(accountCategoryDto.getOrganizationId());
-            if (this.accountCategoryRepository.findByOrganizationIdAndName(organizationId, name).isPresent()) {
+            if (this.accountCategoryRepository.findByOrganizationIdAndName(accountCategoryDto.getOrganizationId(), name).isPresent()) {
                 throw new AccountCategoryAlreadyExistsException();
             }
         }
@@ -72,13 +67,13 @@ public class AccountCategoryServiceImpl implements AccountCategoryService {
     }
 
     @Override
-    public void deleteAccountCategory(Long id) {
+    public void deleteAccountCategory(UUID id) {
         this.accountCategoryRepository.deleteById(id);
 
     }
 
     @Override
-    public List<AccountCategoryDto> getAccountCategories(Long organizationId) {
+    public List<AccountCategoryDto> getAccountCategories(UUID organizationId) {
         return this.accountCategoryRepository.findByOrganizationId(organizationId)
                 .stream()
                 .map(mapper)

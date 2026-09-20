@@ -6,12 +6,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface JournalRepository extends JpaRepository<Journal, Long> {
+public interface JournalRepository extends JpaRepository<Journal, UUID> {
 
-    Optional<Journal> findByOrganizationIdAndName(Long organizationId, String name);
+    Optional<Journal> findByOrganizationIdAndName(UUID organizationId, String name);
 
-    List<Journal> findAllByOrganizationId(Long organizationId);
+    List<Journal> findAllByOrganizationId(UUID organizationId);
 
 }

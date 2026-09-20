@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +30,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     }
 
     @Override
-    public List<ExpenseCategoryDto> getExpenseCategories(Long organizationId, int daysCount) {
+    public List<ExpenseCategoryDto> getExpenseCategories(UUID organizationId, int daysCount) {
         LocalDate toDate = LocalDate.now();
         LocalDate fromDate = toDate.minusDays(daysCount);
         Currency primaryCurrency = currencyRepository.findPrimaryCurrency(organizationId).orElseThrow(CurrencyNotFoundException::new);

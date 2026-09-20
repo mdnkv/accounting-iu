@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.organizations.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.organizations.dto.OrganizationDto;
 import dev.mednikov.accounting.organizations.exceptions.OrganizationNotFoundException;
 import dev.mednikov.accounting.organizations.models.Organization;
@@ -21,15 +20,13 @@ import java.util.UUID;
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceImplTest {
 
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
-
     @Mock private ApplicationEventPublisher eventPublisher;
     @Mock private OrganizationRepository organizationRepository;
     @InjectMocks private OrganizationServiceImpl organizationService;
 
     @Test
     void createOrganizationTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         OrganizationDto payload = new OrganizationDto();
         payload.setName("Wilhelm Meißner AG");
 
@@ -37,7 +34,7 @@ class OrganizationServiceImplTest {
         organization.setId(organizationId);
         organization.setName("Wilhelm Meißner AG");
 
-        Long userId = snowflakeGenerator.next();
+        UUID userId = UUID.randomUUID();
         User user = new User();
         user.setId(userId);
         user.setKeycloakId(UUID.randomUUID());
@@ -53,10 +50,10 @@ class OrganizationServiceImplTest {
 
     @Test
     void updateOrganization_notFoundTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         OrganizationDto payload = new OrganizationDto();
         payload.setName("Sturm Kessler GmbH");
-        payload.setId(organizationId.toString());
+        payload.setId(organizationId);
 
         Mockito.when(organizationRepository.findById(organizationId)).thenReturn(Optional.empty());
         Assertions
@@ -66,11 +63,11 @@ class OrganizationServiceImplTest {
 
     @Test
     void updateOrganization_successTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
 
         OrganizationDto payload = new OrganizationDto();
         payload.setName("Hanke Stiftung & Co. KG");
-        payload.setId(organizationId.toString());
+        payload.setId(organizationId);
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -86,7 +83,7 @@ class OrganizationServiceImplTest {
 
     @Test
     void getOrganizationById_existsTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -100,7 +97,7 @@ class OrganizationServiceImplTest {
 
     @Test
     void getOrganizationById_doesNotExistTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Mockito.when(organizationRepository.findById(organizationId)).thenReturn(Optional.empty());
         Optional<OrganizationDto> result = organizationService.getOrganization(organizationId);
         Assertions.assertThat(result).isEmpty();

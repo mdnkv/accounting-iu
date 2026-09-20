@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.journals.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.journals.dto.JournalDto;
 import dev.mednikov.accounting.journals.exceptions.JournalAlreadyExistsException;
 import dev.mednikov.accounting.journals.exceptions.JournalNotFoundException;
@@ -17,11 +16,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class JournalServiceImplTest {
-
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
 
     @Mock private JournalRepository journalRepository;
     @Mock private OrganizationRepository organizationRepository;
@@ -30,7 +28,7 @@ class JournalServiceImplTest {
 
     @Test
     void createJournal_alreadyExistsTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Herbst Göbel e.G.");
@@ -40,7 +38,7 @@ class JournalServiceImplTest {
         journal.setName("Sales");
 
         JournalDto payload = new JournalDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName("Sales");
 
         Mockito.when(journalRepository.findByOrganizationIdAndName(organizationId, "Sales")).thenReturn(Optional.of(journal));
@@ -49,12 +47,12 @@ class JournalServiceImplTest {
 
     @Test
     void createJournal_successTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Probst Stock GmbH & Co. KG");
 
-        Long journalId = snowflakeGenerator.next();
+        UUID journalId = UUID.randomUUID();
         Journal journal = new Journal();
         journal.setOrganization(organization);
         journal.setName("Sales");
@@ -62,7 +60,7 @@ class JournalServiceImplTest {
         journal.setActive(true);
 
         JournalDto payload = new JournalDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName("Sales");
 
         Mockito.when(journalRepository.findByOrganizationIdAndName(organizationId, "Sales")).thenReturn(Optional.empty());
@@ -75,13 +73,13 @@ class JournalServiceImplTest {
 
     @Test
     void updateJournal_notFoundTest(){
-        Long journalId = snowflakeGenerator.next();
-        Long organizationId = snowflakeGenerator.next();
+        UUID journalId = UUID.randomUUID();
+        UUID organizationId = UUID.randomUUID();
 
 
         JournalDto payload = new JournalDto();
-        payload.setId(journalId.toString());
-        payload.setOrganizationId(organizationId.toString());
+        payload.setId(journalId);
+        payload.setOrganizationId(organizationId);
         payload.setName("Sales");
         payload.setActive(true);
         payload.setDescription("Aliquam iaculis ultricies quam sed sollicitudin.");
@@ -93,8 +91,8 @@ class JournalServiceImplTest {
 
     @Test
     void updateJournal_successTest(){
-        Long journalId = snowflakeGenerator.next();
-        Long organizationId = snowflakeGenerator.next();
+        UUID journalId = UUID.randomUUID();
+        UUID organizationId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -108,8 +106,8 @@ class JournalServiceImplTest {
         journal.setDescription("Fusce scelerisque eros ut leo pellentesque rhoncus.");
 
         JournalDto payload = new JournalDto();
-        payload.setId(journalId.toString());
-        payload.setOrganizationId(organizationId.toString());
+        payload.setId(journalId);
+        payload.setOrganizationId(organizationId);
         payload.setName("Sales");
         payload.setActive(true);
         payload.setDescription("Fusce scelerisque eros ut leo pellentesque rhoncus.");
@@ -123,8 +121,8 @@ class JournalServiceImplTest {
 
     @Test
     void updateJournal_nameAlreadyExistsTest(){
-        Long journalId = snowflakeGenerator.next();
-        Long organizationId = snowflakeGenerator.next();
+        UUID journalId = UUID.randomUUID();
+        UUID organizationId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -137,8 +135,8 @@ class JournalServiceImplTest {
         journal.setActive(true);
 
         JournalDto payload = new JournalDto();
-        payload.setId(journalId.toString());
-        payload.setOrganizationId(organizationId.toString());
+        payload.setId(journalId);
+        payload.setOrganizationId(organizationId);
         payload.setName("General");
         payload.setActive(true);
 
@@ -149,8 +147,8 @@ class JournalServiceImplTest {
 
     @Test
     void getJournal_existsTest(){
-        Long journalId = snowflakeGenerator.next();
-        Long organizationId = snowflakeGenerator.next();
+        UUID journalId = UUID.randomUUID();
+        UUID organizationId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -170,7 +168,7 @@ class JournalServiceImplTest {
 
     @Test
     void getJournal_notExistsTest(){
-        Long journalId = snowflakeGenerator.next();
+        UUID journalId = UUID.randomUUID();
         Mockito.when(journalRepository.findById(journalId)).thenReturn(Optional.empty());
         Optional<JournalDto> result = journalService.getJournal(journalId);
         Assertions.assertThat(result).isEmpty();

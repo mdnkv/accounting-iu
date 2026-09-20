@@ -3,6 +3,7 @@ package dev.mednikov.accounting.authorities.services;
 import dev.mednikov.accounting.authorities.dto.AuthorityDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface AuthorityService {
 
@@ -10,8 +11,8 @@ public interface AuthorityService {
 
     AuthorityDto updateAuthority(AuthorityDto payload);
 
-    void deleteAuthority (Long id);
+    void deleteAuthority (UUID id);
 
-    List<AuthorityDto> getAuthorities(Long organizationId);
+    List<AuthorityDto> getAuthorities(UUID organizationId);
 
 }

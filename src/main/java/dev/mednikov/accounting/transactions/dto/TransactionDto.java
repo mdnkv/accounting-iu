@@ -8,14 +8,15 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 public final class TransactionDto {
 
-    private String id;
-    @NotNull @NotBlank private String organizationId;
+    private UUID id;
+    @NotNull @NotBlank private UUID organizationId;
     @NotNull @NotBlank private String description;
-    @NotNull @NotBlank private String currencyId;
-    @NotNull @NotBlank private String journalId;
+    @NotNull @NotBlank private UUID currencyId;
+    @NotNull @NotBlank private UUID journalId;
     @NotNull private LocalDate date;
     private boolean draft;
     private BigDecimal totalCreditAmount;
@@ -23,19 +24,19 @@ public final class TransactionDto {
     private CurrencyDto currency;
     @NotNull @NotEmpty private List<TransactionLineDto> lines;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public String getOrganizationId() {
+    public UUID getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(String organizationId) {
+    public void setOrganizationId(UUID organizationId) {
         this.organizationId = organizationId;
     }
 
@@ -47,11 +48,11 @@ public final class TransactionDto {
         this.description = description;
     }
 
-    public String getCurrencyId() {
+    public UUID getCurrencyId() {
         return currencyId;
     }
 
-    public void setCurrencyId(String currency) {
+    public void setCurrencyId(UUID currency) {
         this.currencyId = currency;
     }
 
@@ -103,11 +104,11 @@ public final class TransactionDto {
         this.draft = draft;
     }
 
-    public String getJournalId() {
+    public UUID getJournalId() {
         return journalId;
     }
 
-    public void setJournalId(String journalId) {
+    public void setJournalId(UUID journalId) {
         this.journalId = journalId;
     }
 }

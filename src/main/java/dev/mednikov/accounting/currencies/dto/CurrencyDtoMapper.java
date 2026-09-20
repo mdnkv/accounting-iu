@@ -13,8 +13,8 @@ public final class CurrencyDtoMapper implements Function<Currency, CurrencyDto> 
         result.setCode(currency.getCode());
         result.setPrimary(currency.isPrimary());
         result.setDeprecated(currency.isDeprecated());
-        result.setId(currency.getId().toString());
-        result.setOrganizationId(currency.getOrganization().getId().toString());
+        result.setId(currency.getId());
+        result.setOrganizationId(currency.getOrganization().getId());
         return result;
     }
 }

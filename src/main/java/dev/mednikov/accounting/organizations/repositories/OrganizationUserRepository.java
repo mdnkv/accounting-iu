@@ -7,17 +7,18 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface OrganizationUserRepository extends JpaRepository<OrganizationUser, Long> {
+public interface OrganizationUserRepository extends JpaRepository<OrganizationUser, UUID> {
 
     @Query("SELECT ou FROM OrganizationUser ou WHERE ou.user.id = :userId AND ou.active=true")
-    Optional<OrganizationUser> findActiveForUser (Long userId);
+    Optional<OrganizationUser> findActiveForUser (UUID userId);
 
-    Optional<OrganizationUser> findByOrganizationIdAndUserId(Long organizationId, Long userId);
+    Optional<OrganizationUser> findByOrganizationIdAndUserId(UUID organizationId, UUID userId);
 
-    List<OrganizationUser> findAllByUserId(Long userId);
+    List<OrganizationUser> findAllByUserId(UUID userId);
 
-    List<OrganizationUser> findAllByOrganizationId(Long organizationId);
+    List<OrganizationUser> findAllByOrganizationId(UUID organizationId);
 
 }

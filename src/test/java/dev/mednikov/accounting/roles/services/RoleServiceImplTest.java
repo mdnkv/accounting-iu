@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.roles.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.authorities.dto.AuthorityDto;
 import dev.mednikov.accounting.authorities.repositories.AuthorityRepository;
 import dev.mednikov.accounting.organizations.models.Organization;
@@ -20,11 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class RoleServiceImplTest {
-
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
 
     @Mock private RoleRepository roleRepository;
     @Mock private AuthorityRepository authorityRepository;
@@ -33,8 +31,8 @@ class RoleServiceImplTest {
 
     @Test
     void createRole_alreadyExistsTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -46,12 +44,12 @@ class RoleServiceImplTest {
         role.setOrganization(organization);
 
         AuthorityDto authorityDto = new AuthorityDto();
-        authorityDto.setId(snowflakeGenerator.next().toString());
+        authorityDto.setId(UUID.randomUUID());
         authorityDto.setName("accounts:create");
-        authorityDto.setOrganizationId(organizationId.toString());
+        authorityDto.setOrganizationId(organizationId);
         RoleDto payload = new RoleDto();
         payload.setAuthorities(List.of(authorityDto));
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName("Administrator");
 
         Mockito.when(roleRepository.findByNameAndOrganizationId("Administrator", organizationId)).thenReturn(Optional.of(role));
@@ -60,8 +58,8 @@ class RoleServiceImplTest {
 
     @Test
     void createRole_successTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -73,12 +71,12 @@ class RoleServiceImplTest {
         role.setOrganization(organization);
 
         RoleDto payload = new RoleDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName("Administrator");
         payload.setAuthorities(List.of());
 
         Mockito.when(roleRepository.findByNameAndOrganizationId("Administrator", organizationId)).thenReturn(Optional.empty());
-        Mockito.when(organizationRepository.getReferenceById(organizationId)).thenReturn(organization);
+        Mockito.when(organizationRepository.findById(organizationId)).thenReturn(Optional.of(organization));
         Mockito.when(roleRepository.save(role)).thenReturn(role);
 
         RoleDto result = roleService.createRole(payload);
@@ -87,8 +85,8 @@ class RoleServiceImplTest {
 
     @Test
     void updateRole_alreadyExistsTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -100,8 +98,8 @@ class RoleServiceImplTest {
         role.setOrganization(organization);
 
         RoleDto payload = new RoleDto();
-        payload.setId(roleId.toString());
-        payload.setOrganizationId(organizationId.toString());
+        payload.setId(roleId);
+        payload.setOrganizationId(organizationId);
         payload.setName("User");
         payload.setAuthorities(List.of());
 
@@ -112,12 +110,12 @@ class RoleServiceImplTest {
 
     @Test
     void updateRole_notFoundTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
 
         RoleDto payload = new RoleDto();
-        payload.setId(roleId.toString());
-        payload.setOrganizationId(organizationId.toString());
+        payload.setId(roleId);
+        payload.setOrganizationId(organizationId);
         payload.setName("User");
         payload.setAuthorities(List.of());
 
@@ -127,8 +125,8 @@ class RoleServiceImplTest {
 
     @Test
     void updateRole_successTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long roleId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -140,8 +138,8 @@ class RoleServiceImplTest {
         role.setOrganization(organization);
 
         RoleDto payload = new RoleDto();
-        payload.setId(roleId.toString());
-        payload.setOrganizationId(organizationId.toString());
+        payload.setId(roleId);
+        payload.setOrganizationId(organizationId);
         payload.setName("User");
         payload.setAuthorities(List.of());
 

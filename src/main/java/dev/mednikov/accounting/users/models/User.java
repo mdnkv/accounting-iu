@@ -1,9 +1,6 @@
 package dev.mednikov.accounting.users.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jdk.jfr.Enabled;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,11 +9,11 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user_accounts")
+@Table(name = "users_user")
 public class User {
 
-    @Id
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "keycloak_id", nullable = false, unique = true)
     private UUID keycloakId;
@@ -24,17 +21,26 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @Column(name = "avatar_url", nullable = false)
+    private String avatarUrl;
 
     @Column(name = "is_active", nullable = false)
     private boolean active;
 
     @Column(name = "is_superuser", nullable = false)
     private boolean superuser;
+
+    @Column(name = "is_premium", nullable = false)
+    private boolean premium;
+
+    @Column(name = "is_email_verified", nullable = false)
+    private boolean emailVerified;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -56,11 +62,11 @@ public class User {
         return keycloakId.hashCode();
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -110,5 +116,29 @@ public class User {
 
     public void setSuperuser(boolean superuser) {
         this.superuser = superuser;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public boolean isPremium() {
+        return premium;
+    }
+
+    public void setPremium(boolean premium) {
+        this.premium = premium;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 }

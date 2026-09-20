@@ -15,8 +15,8 @@ public final class RoleDtoMapper implements Function<Role, RoleDto> {
     public RoleDto apply(Role role) {
         RoleDto result = new RoleDto();
         result.setName(role.getName());
-        result.setId(role.getId().toString());
-        result.setOrganizationId(role.getOrganization().getId().toString());
+        result.setId(role.getId());
+        result.setOrganizationId(role.getOrganization().getId());
         // Map authorities to dto
         List<AuthorityDto> authorities = role.getAuthorities().stream().map(authorityDtoMapper).toList();
         result.setAuthorities(authorities);

@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -31,7 +32,7 @@ public class DashboardRestController {
     @GetMapping("/profit-loss/{organizationId}")
     @PreAuthorize("hasAuthority(#organizationId)")
     public @ResponseBody ProfitLossSummaryDto getProfitLossSummary (
-            @PathVariable Long organizationId,
+            @PathVariable UUID organizationId,
             @RequestParam(required = false, defaultValue = "30") int daysCount
     ) {
         return this.profitLossService.getProfitLossSummary(organizationId, daysCount);
@@ -40,7 +41,7 @@ public class DashboardRestController {
     @GetMapping("/net-worth/{organizationId}")
     @PreAuthorize("hasAuthority(#organizationId)")
     public @ResponseBody NetWorthSummaryDto getNetWorthSummary(
-            @PathVariable Long organizationId,
+            @PathVariable UUID organizationId,
             @RequestParam(required = false, defaultValue = "30") int daysCount
     ) {
         return this.netWorthService.getNetWorthSummary(organizationId, daysCount);
@@ -49,7 +50,7 @@ public class DashboardRestController {
     @GetMapping("/expense-categories/{organizationId}")
     @PreAuthorize("hasAuthority(#organizationId)")
     public @ResponseBody List<ExpenseCategoryDto> getExpenseCategories (
-            @PathVariable Long organizationId,
+            @PathVariable UUID organizationId,
             @RequestParam(required = false, defaultValue = "30") int daysCount
     ) {
         return this.expenseCategoryService.getExpenseCategories(organizationId, daysCount);

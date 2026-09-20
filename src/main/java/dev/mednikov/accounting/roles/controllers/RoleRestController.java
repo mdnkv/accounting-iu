@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/roles")
@@ -35,27 +36,27 @@ public class RoleRestController {
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('roles:delete')")
-    public void deleteRole (@PathVariable Long id){
+    public void deleteRole (@PathVariable UUID id){
         this.roleService.deleteRole(id);
     }
 
     @GetMapping("/organization/{organizationId}")
     @PreAuthorize("hasAuthority('roles:view') and hasAuthority(#organizationId)")
-    public @ResponseBody List<RoleDto> getRoles (@PathVariable Long organizationId){
+    public @ResponseBody List<RoleDto> getRoles (@PathVariable UUID organizationId){
         return this.roleService.getRoles(organizationId);
     }
 
     @PostMapping("/authority/add/{roleId}/{authorityId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('roles:update')")
-    public void addAuthorityToRole (@PathVariable Long roleId, @PathVariable Long authorityId){
+    public void addAuthorityToRole (@PathVariable UUID roleId, @PathVariable UUID authorityId){
         this.roleService.addAuthorityToRole(roleId, authorityId);
     }
 
     @PostMapping("/authority/remove/{roleId}/{authorityId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAuthority('roles:update')")
-    public void removeAuthorityFromRole (@PathVariable Long roleId, @PathVariable Long authorityId){
+    public void removeAuthorityFromRole (@PathVariable UUID roleId, @PathVariable UUID authorityId){
         this.roleService.removeAuthorityFromRole(roleId, authorityId);
     }
 

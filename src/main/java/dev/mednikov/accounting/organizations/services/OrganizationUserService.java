@@ -7,6 +7,7 @@ import dev.mednikov.accounting.users.models.User;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface OrganizationUserService {
 
@@ -14,14 +15,14 @@ public interface OrganizationUserService {
 
     OrganizationUserDto updateOrganizationUser (OrganizationUserDto payload);
 
-    List<OrganizationUserDto> getUsersInOrganization (Long organizationId);
+    List<OrganizationUserDto> getUsersInOrganization (UUID organizationId);
 
     Optional<UserOrganizationDto> getActiveForUser (User user);
 
     List<UserOrganizationDto> getAllForUser (User user);
 
-    UserOrganizationDto setActiveForUser (User user, Long id);
+    UserOrganizationDto setActiveForUser (User user, UUID id);
 
-    void deleteOrganizationUser (Long id);
+    void deleteOrganizationUser (UUID id);
 
 }

@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.authorities.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.authorities.dto.AuthorityDto;
 import dev.mednikov.accounting.authorities.dto.AuthorityDtoMapper;
 import dev.mednikov.accounting.authorities.exceptions.AuthorityAlreadyExistsException;
@@ -14,11 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class AuthorityServiceImpl implements AuthorityService {
 
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
     private final static AuthorityDtoMapper mapper = new AuthorityDtoMapper();
 
     private final AuthorityRepository authorityRepository;
@@ -31,8 +30,8 @@ public class AuthorityServiceImpl implements AuthorityService {
 
     @Override
     public AuthorityDto createAuthority(AuthorityDto payload) {
-        Long organizationId = Long.valueOf(payload.getOrganizationId());
         String name = payload.getName();
+        UUID organizationId = payload.getOrganizationId();
         if (this.authorityRepository.findByOrganizationIdAndName(organizationId, name).isPresent()) {
             throw new AuthorityAlreadyExistsException();
         }
@@ -41,7 +40,6 @@ public class AuthorityServiceImpl implements AuthorityService {
         Authority authority = new Authority();
         authority.setOrganization(organization);
         authority.setName(name);
-        authority.setId(snowflakeGenerator.next());
 
         Authority result = this.authorityRepository.save(authority);
 
@@ -51,12 +49,10 @@ public class AuthorityServiceImpl implements AuthorityService {
     @Override
     public AuthorityDto updateAuthority(AuthorityDto payload) {
         Objects.requireNonNull(payload.getId());
-        Long id = Long.valueOf(payload.getId());
-        Authority authority = this.authorityRepository.findById(id).orElseThrow(AuthorityNotFoundException::new);
+        Authority authority = this.authorityRepository.findById(payload.getId()).orElseThrow(AuthorityNotFoundException::new);
 
         if (!authority.getName().equals(payload.getName())) {
-            Long organizationId = Long.valueOf(payload.getOrganizationId());
-            if (this.authorityRepository.findByOrganizationIdAndName(organizationId, payload.getName()).isPresent()){
+            if (this.authorityRepository.findByOrganizationIdAndName(payload.getOrganizationId(), payload.getName()).isPresent()){
                 throw new AuthorityAlreadyExistsException();
             }
         }
@@ -68,13 +64,13 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
-    public void deleteAuthority(Long id) {
+    public void deleteAuthority(UUID id) {
         this.authorityRepository.deleteById(id);
 
     }
 
     @Override
-    public List<AuthorityDto> getAuthorities(Long organizationId) {
+    public List<AuthorityDto> getAuthorities(UUID organizationId) {
         return this.authorityRepository.findByOrganizationId(organizationId)
                 .stream()
                 .map(mapper)

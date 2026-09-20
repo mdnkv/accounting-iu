@@ -7,9 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface TransactionLineRepository extends JpaRepository<TransactionLine, Long> {
+public interface TransactionLineRepository extends JpaRepository<TransactionLine, UUID> {
 
     @Query("""
     SELECT tl FROM TransactionLine tl
@@ -18,7 +19,7 @@ public interface TransactionLineRepository extends JpaRepository<TransactionLine
     AND tl.transaction.draft = false
     AND tl.transaction.date <= :toDate
     """)
-    List<TransactionLine> getBalanceSheetLines (Long organizationId, LocalDate toDate);
+    List<TransactionLine> getBalanceSheetLines (UUID organizationId, LocalDate toDate);
 
     @Query("""
     SELECT tl FROM TransactionLine tl
@@ -27,7 +28,7 @@ public interface TransactionLineRepository extends JpaRepository<TransactionLine
         AND tl.transaction.draft = false
     AND tl.account.accountType IN ('INCOME', 'EXPENSE')
     """)
-    List<TransactionLine> getProfitLossLines(Long organizationId, LocalDate fromDate, LocalDate toDate);
+    List<TransactionLine> getProfitLossLines(UUID organizationId, LocalDate fromDate, LocalDate toDate);
 
     @Query("""
     SELECT tl FROM TransactionLine tl
@@ -36,7 +37,7 @@ public interface TransactionLineRepository extends JpaRepository<TransactionLine
     AND (tl.transaction.date >= :fromDate AND tl.transaction.date <= :toDate)
     AND tl.transaction.draft = false
     """)
-    List<TransactionLine> getAssetsAndLiabilityLines (Long organizationId, LocalDate fromDate, LocalDate toDate);
+    List<TransactionLine> getAssetsAndLiabilityLines (UUID organizationId, LocalDate fromDate, LocalDate toDate);
 
     @Query("""
     SELECT tl FROM TransactionLine tl
@@ -45,11 +46,11 @@ public interface TransactionLineRepository extends JpaRepository<TransactionLine
     AND (tl.transaction.date >= :fromDate AND tl.transaction.date <= :toDate)
     AND tl.transaction.draft = false
     """)
-    List<TransactionLine> getExpenseLines (Long organizationId, LocalDate fromDate, LocalDate toDate);
+    List<TransactionLine> getExpenseLines (UUID organizationId, LocalDate fromDate, LocalDate toDate);
 
     @Query("SELECT tl FROM TransactionLine  tl WHERE tl.account.id = :accountId AND tl.transaction.draft = false")
-    List<TransactionLine> findByAccountId(Long accountId);
+    List<TransactionLine> findByAccountId(UUID accountId);
 
     @Query("SELECT tl FROM TransactionLine  tl WHERE tl.account.id = :accountId AND tl.transaction.date <= :date AND tl.transaction.draft = false")
-    List<TransactionLine> findByAccountIdBeforeDate(Long accountId, LocalDate date);
+    List<TransactionLine> findByAccountIdBeforeDate(UUID accountId, LocalDate date);
 }

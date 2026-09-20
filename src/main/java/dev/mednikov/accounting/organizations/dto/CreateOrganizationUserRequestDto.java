@@ -5,11 +5,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.UUID;
+
 public final class CreateOrganizationUserRequestDto {
 
     @NotNull @NotBlank @Email private String email;
-    @NotNull @NotBlank private String roleId;
-    @NotNull @NotBlank private String organizationId;
+    @NotNull @NotBlank private UUID roleId;
+    @NotNull @NotBlank private UUID organizationId;
 
     public String getEmail() {
         return email;
@@ -19,19 +21,19 @@ public final class CreateOrganizationUserRequestDto {
         this.email = email;
     }
 
-    public String getRoleId() {
+    public UUID getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(String roleId) {
+    public void setRoleId(UUID roleId) {
         this.roleId = roleId;
     }
 
-    public String getOrganizationId() {
+    public UUID getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(String organizationId) {
+    public void setOrganizationId(UUID organizationId) {
         this.organizationId = organizationId;
     }
 }

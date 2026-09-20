@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @ResponseBody
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByKeycloakId (UUID id);
 

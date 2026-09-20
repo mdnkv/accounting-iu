@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class NetWorthServiceImpl implements NetWorthService {
@@ -25,7 +26,7 @@ public class NetWorthServiceImpl implements NetWorthService {
     }
 
     @Override
-    public NetWorthSummaryDto getNetWorthSummary(Long organizationId, int daysCount) {
+    public NetWorthSummaryDto getNetWorthSummary(UUID organizationId, int daysCount) {
 //        Currency primaryCurrency = this.currencyRepository.findPrimaryCurrency(organizationId).orElseThrow(CurrencyNotFoundException::new);
         LocalDate toDate = LocalDate.now();
         LocalDate fromDate = toDate.minusDays(daysCount);

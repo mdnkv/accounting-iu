@@ -3,6 +3,7 @@ package dev.mednikov.accounting.accounts.services;
 import dev.mednikov.accounting.accounts.dto.AccountCategoryDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface AccountCategoryService {
 
@@ -10,8 +11,8 @@ public interface AccountCategoryService {
 
     AccountCategoryDto updateAccountCategory(AccountCategoryDto accountCategoryDto);
 
-    void deleteAccountCategory(Long id);
+    void deleteAccountCategory(UUID id);
 
-    List<AccountCategoryDto> getAccountCategories(Long organizationId);
+    List<AccountCategoryDto> getAccountCategories(UUID organizationId);
 
 }

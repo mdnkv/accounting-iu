@@ -8,16 +8,17 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Entity
 @Table(
-        name = "accounts",
+        name = "accounts_account",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"organization_id", "code"})}
 )
 public class Account {
 
-    @Id
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false)
@@ -65,11 +66,11 @@ public class Account {
         return result;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

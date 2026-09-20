@@ -1,6 +1,5 @@
 package dev.mednikov.accounting.authorities.services;
 
-import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import dev.mednikov.accounting.authorities.dto.AuthorityDto;
 import dev.mednikov.accounting.authorities.exceptions.AuthorityAlreadyExistsException;
 import dev.mednikov.accounting.authorities.exceptions.AuthorityNotFoundException;
@@ -18,11 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorityServiceImplTest {
-
-    private final static SnowflakeGenerator snowflakeGenerator = new SnowflakeGenerator();
 
     @Mock private AuthorityRepository authorityRepository;
     @Mock private OrganizationRepository organizationRepository;
@@ -30,7 +28,7 @@ class AuthorityServiceImplTest {
 
     @Test
     void createAuthority_alreadyExistsTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Ebert Bruns Stiftung & Co. KG");
@@ -38,11 +36,11 @@ class AuthorityServiceImplTest {
         String authorityName = "accounts:create";
         Authority authority = new Authority();
         authority.setOrganization(organization);
-        authority.setId(snowflakeGenerator.next());
+        authority.setId(UUID.randomUUID());
         authority.setName(authorityName);
 
         AuthorityDto payload = new AuthorityDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName(authorityName);
 
         Mockito.when(authorityRepository.findByOrganizationIdAndName(organizationId, authorityName)).thenReturn(Optional.of(authority));
@@ -52,7 +50,7 @@ class AuthorityServiceImplTest {
 
     @Test
     void createAuthority_successTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
         Organization organization = new Organization();
         organization.setId(organizationId);
         organization.setName("Rupp GmbH & Co. KG");
@@ -60,11 +58,11 @@ class AuthorityServiceImplTest {
         String authorityName = "accounts:create";
         Authority authority = new Authority();
         authority.setOrganization(organization);
-        authority.setId(snowflakeGenerator.next());
+        authority.setId(UUID.randomUUID());
         authority.setName(authorityName);
 
         AuthorityDto payload = new AuthorityDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName(authorityName);
 
         Mockito.when(authorityRepository.findByOrganizationIdAndName(organizationId, authorityName)).thenReturn(Optional.empty());
@@ -77,14 +75,14 @@ class AuthorityServiceImplTest {
 
     @Test
     void updateAuthority_notFoundTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long authorityId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID authorityId = UUID.randomUUID();
 
         String authorityName = "accounts:update";
         AuthorityDto payload = new AuthorityDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName(authorityName);
-        payload.setId(authorityId.toString());
+        payload.setId(authorityId);
 
         Mockito.when(authorityRepository.findById(authorityId)).thenReturn(Optional.empty());
         Assertions.assertThatThrownBy(() -> authorityService.updateAuthority(payload)).isInstanceOf(AuthorityNotFoundException.class);
@@ -92,8 +90,8 @@ class AuthorityServiceImplTest {
 
     @Test
     void updateAuthority_alreadyExistsTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long authorityId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID authorityId = UUID.randomUUID();
 
         String authorityName = "accounts:update";
 
@@ -103,14 +101,14 @@ class AuthorityServiceImplTest {
 
         Authority authority = new Authority();
         authority.setOrganization(organization);
-        authority.setId(snowflakeGenerator.next());
+        authority.setId(UUID.randomUUID());
         authority.setName(authorityName);
         authority.setId(authorityId);
 
         AuthorityDto payload = new AuthorityDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName("transactions:create");
-        payload.setId(authorityId.toString());
+        payload.setId(authorityId);
 
         Mockito.when(authorityRepository.findById(authorityId)).thenReturn(Optional.of(authority));
         Mockito.when(authorityRepository.findByOrganizationIdAndName(organizationId, "transactions:create")).thenReturn(Optional.of(new Authority()));
@@ -119,8 +117,8 @@ class AuthorityServiceImplTest {
 
     @Test
     void updateAuthority_successTest(){
-        Long organizationId = snowflakeGenerator.next();
-        Long authorityId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
+        UUID authorityId = UUID.randomUUID();
 
         String authorityName = "accounts:update";
 
@@ -130,14 +128,14 @@ class AuthorityServiceImplTest {
 
         Authority authority = new Authority();
         authority.setOrganization(organization);
-        authority.setId(snowflakeGenerator.next());
+        authority.setId(UUID.randomUUID());
         authority.setName(authorityName);
         authority.setId(authorityId);
 
         AuthorityDto payload = new AuthorityDto();
-        payload.setOrganizationId(organizationId.toString());
+        payload.setOrganizationId(organizationId);
         payload.setName(authorityName);
-        payload.setId(authorityId.toString());
+        payload.setId(authorityId);
 
         Mockito.when(authorityRepository.findById(authorityId)).thenReturn(Optional.of(authority));
         Mockito.when(authorityRepository.save(authority)).thenReturn(authority);
@@ -148,7 +146,7 @@ class AuthorityServiceImplTest {
 
     @Test
     void getAuthoritiesTest(){
-        Long organizationId = snowflakeGenerator.next();
+        UUID organizationId = UUID.randomUUID();
 
         Organization organization = new Organization();
         organization.setId(organizationId);
@@ -156,9 +154,9 @@ class AuthorityServiceImplTest {
 
         Authority authority = new Authority();
         authority.setOrganization(organization);
-        authority.setId(snowflakeGenerator.next());
+        authority.setId(UUID.randomUUID());
         authority.setName("transactions:create");
-        authority.setId(snowflakeGenerator.next());
+        authority.setId(UUID.randomUUID());
 
         List<Authority> authorities = List.of(authority);
 
