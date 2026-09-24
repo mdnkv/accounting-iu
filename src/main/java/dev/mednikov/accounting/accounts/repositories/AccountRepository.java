@@ -12,19 +12,20 @@ import java.util.UUID;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, UUID> {
 
+    boolean existsByCodeAndOrganizationId (String code, UUID organizationId);
+
     Optional<Account> findByOrganizationIdAndCode (UUID organizationId, String code);
 
     @Query("SELECT ac FROM Account ac WHERE ac.organization.id = :organizationId ORDER BY ac.code")
     List<Account> findAllByOrganizationId(UUID organizationId);
 
-    @Query("SELECT ac FROM Account ac WHERE ac.organization.id = :organizationId AND ac.deprecated = false ORDER BY ac.code")
+    @Query("SELECT ac FROM Account ac WHERE ac.organization.id = :organizationId AND ac.active = true ORDER BY ac.code")
     List<Account> findActiveByOrganizationId(UUID organizationId);
 
     @Query("""
     SELECT ac FROM Account ac
     WHERE ac.organization.id = :organizationId
-    AND ac.deprecated = false
-    AND ac.accountType IN ('ASSET', 'LIABILITY', 'EQUITY')
+    AND ac.active = true
     ORDER BY ac.code ASC
 """)
     List<Account> findBalanceSheetAccounts (UUID organizationId);

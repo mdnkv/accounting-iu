@@ -1,5 +1,6 @@
 package dev.mednikov.accounting.shared.bootstrap;
 
+import dev.mednikov.accounting.accounts.models.AccountBalanceType;
 import dev.mednikov.accounting.accounts.models.AccountType;
 
 final class AccountBootstrapDto {
@@ -7,7 +8,7 @@ final class AccountBootstrapDto {
     private String name;
     private String code;
     private String categoryName;
-    private AccountType accountType;
+    private AccountBalanceType normalBalance;
 
     public String getName() {
         return name;
@@ -33,11 +34,11 @@ final class AccountBootstrapDto {
         this.categoryName = categoryName;
     }
 
-    public AccountType getAccountType() {
-        return accountType;
+    public AccountBalanceType getNormalBalance() {
+        return normalBalance;
     }
 
-    public void setAccountType(AccountType accountType) {
-        this.accountType = accountType;
+    public void setNormalBalance(AccountBalanceType normalBalance) {
+        this.normalBalance = normalBalance;
     }
 }

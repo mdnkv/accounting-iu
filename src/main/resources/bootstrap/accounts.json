@@ -2,163 +2,157 @@
   {
     "name": "Cash",
     "code": "10100",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Current Assets"
   },
   {
     "name": "Accounts Receivable",
     "code": "12100",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Current Assets"
   },
   {
     "name": "Inventory",
     "code": "13100",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Current Assets"
   },
   {
     "name": "Supplies",
     "code": "14100",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Current Assets"
   },
   {
     "name": "Prepaid Insurance",
     "code": "15300",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Current Assets"
   },
   {
     "name": "Land",
     "code": "17000",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Property, Plant, and Equipment"
   },
   {
     "name": "Buildings",
     "code": "17100",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Property, Plant, and Equipment"
   },
   {
     "name": "Equipment",
     "code": "17300",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Property, Plant, and Equipment"
   },
   {
     "name": "Vehicles",
     "code": "17800",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Property, Plant, and Equipment"
   },
   {
     "name": "Accumulated Depreciation - Buildings",
     "code": "18100",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Property, Plant, and Equipment"
   },
   {
     "name": "Accumulated Depreciation - Equipment",
     "code": "18300",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Property, Plant, and Equipment"
   },
   {
     "name": "Accumulated Depreciation - Vehicles",
     "code": "18800",
-    "accountType": "ASSET",
+    "normalBalance": "DEBIT",
     "categoryName": "Property, Plant, and Equipment"
   },
   {
     "name": "Accounts Payable",
     "code": "21000",
-    "accountType": "LIABILITY",
+    "normalBalance": "CREDIT",
     "categoryName": "Current Liabilities"
   },
   {
     "name": "Wages Payable",
     "code": "22100",
-    "accountType": "LIABILITY",
+    "normalBalance": "CREDIT",
     "categoryName": "Current Liabilities"
   },
   {
     "name": "Interest Payable",
     "code": "23100",
-    "accountType": "LIABILITY",
+    "normalBalance": "CREDIT",
     "categoryName": "Current Liabilities"
   },
   {
     "name": "Unearned Revenues",
     "code": "24500",
-    "accountType": "LIABILITY",
+    "normalBalance": "CREDIT",
     "categoryName": "Current Liabilities"
   },
   {
     "name": "Mortgage Loan Payable",
     "code": "25100",
-    "accountType": "LIABILITY",
+    "normalBalance": "CREDIT",
     "categoryName": "Long-term Liabilities"
   },
   {
     "name": "Bonds Payable",
     "code": "25600",
-    "accountType": "LIABILITY",
+    "normalBalance": "CREDIT",
     "categoryName": "Long-term Liabilities"
   },
   {
     "name": "Common stock",
     "code": "27100",
-    "accountType": "EQUITY",
+    "normalBalance": "CREDIT",
     "categoryName": "Stockholders' Equity"
   },
   {
     "name": "Retained Earnings",
     "code": "27500",
-    "accountType": "EQUITY",
-    "categoryName": "Stockholders' Equity"
-  },
-  {
-    "name": "Treasury stock",
-    "code": "29500",
-    "accountType": "EQUITY",
+    "normalBalance": "DEBIT",
     "categoryName": "Stockholders' Equity"
   },
   {
     "name": "Sales",
     "code": "31010",
-    "accountType": "INCOME",
+    "normalBalance": "CREDIT",
     "categoryName": "Operating Revenues"
   },
   {
     "name": "Cost of Goods Sold",
     "code": "41010",
-    "accountType": "EXPENSE",
+    "normalBalance": "DEBIT",
     "categoryName": "Cost of Goods Sold"
   },
   {
     "name": "Marketing expenses",
     "code": "50100",
-    "accountType": "EXPENSE",
+    "normalBalance": "DEBIT",
     "categoryName": "Operating Expenses"
   },
   {
     "name": "Salaries expenses",
     "code": "50500",
-    "accountType": "EXPENSE",
+    "normalBalance": "DEBIT",
     "categoryName": "Operating Expenses"
   },
   {
     "name": "Rent expenses",
     "code": "50560",
-    "accountType": "EXPENSE",
+    "normalBalance": "DEBIT",
     "categoryName": "Operating Expenses"
   },
   {
     "name": "Supplies expenses",
     "code": "50540",
-    "accountType": "EXPENSE",
+    "normalBalance": "DEBIT",
     "categoryName": "Operating Expenses"
   }
 ]

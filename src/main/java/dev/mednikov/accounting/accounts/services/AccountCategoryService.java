@@ -1,18 +1,22 @@
 package dev.mednikov.accounting.accounts.services;
 
-import dev.mednikov.accounting.accounts.dto.AccountCategoryDto;
+import dev.mednikov.accounting.accounts.domain.AccountCategoryResponseDto;
+import dev.mednikov.accounting.accounts.domain.CreateAccountCategoryRequestDto;
+import dev.mednikov.accounting.accounts.domain.UpdateAccountCategoryRequestDto;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface AccountCategoryService {
 
-    AccountCategoryDto createAccountCategory(AccountCategoryDto accountCategoryDto);
+    AccountCategoryResponseDto createAccountCategory (CreateAccountCategoryRequestDto requestDto);
 
-    AccountCategoryDto updateAccountCategory(AccountCategoryDto accountCategoryDto);
+    AccountCategoryResponseDto updateAccountCategory (UpdateAccountCategoryRequestDto requestDto);
 
-    void deleteAccountCategory(UUID id);
+    Optional<AccountCategoryResponseDto> getAccountCategoryById (UUID id);
 
-    List<AccountCategoryDto> getAccountCategories(UUID organizationId);
+    List<AccountCategoryResponseDto> getAllAccountCategories(UUID organizationId);
+
 
 }

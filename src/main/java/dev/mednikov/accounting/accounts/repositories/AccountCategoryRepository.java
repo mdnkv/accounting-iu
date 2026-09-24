@@ -11,7 +11,9 @@ import java.util.UUID;
 @Repository
 public interface AccountCategoryRepository extends JpaRepository<AccountCategory, UUID> {
 
-    List<AccountCategory> findByOrganizationId(UUID organizationId);
+    boolean existsByNameAndOrganizationId(String name, UUID organizationId);
+
+    List<AccountCategory> findAllByOrganizationId (UUID organizationId);
 
     Optional<AccountCategory> findByOrganizationIdAndName(UUID organizationId, String name);
 

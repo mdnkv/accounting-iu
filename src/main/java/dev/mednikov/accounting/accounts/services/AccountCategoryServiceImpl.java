@@ -1,9 +1,11 @@
 package dev.mednikov.accounting.accounts.services;
 
-import dev.mednikov.accounting.accounts.dto.AccountCategoryDto;
-import dev.mednikov.accounting.accounts.dto.AccountCategoryDtoMapper;
+import dev.mednikov.accounting.accounts.domain.AccountCategoryResponseDto;
+import dev.mednikov.accounting.accounts.domain.CreateAccountCategoryRequestDto;
+import dev.mednikov.accounting.accounts.domain.UpdateAccountCategoryRequestDto;
 import dev.mednikov.accounting.accounts.exceptions.AccountCategoryAlreadyExistsException;
 import dev.mednikov.accounting.accounts.exceptions.AccountCategoryNotFoundException;
+import dev.mednikov.accounting.accounts.mappers.AccountCategoryResponseDtoMapper;
 import dev.mednikov.accounting.accounts.models.AccountCategory;
 import dev.mednikov.accounting.accounts.repositories.AccountCategoryRepository;
 import dev.mednikov.accounting.organizations.exceptions.OrganizationNotFoundException;
@@ -13,70 +15,86 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class AccountCategoryServiceImpl implements AccountCategoryService {
 
-    private final AccountCategoryDtoMapper mapper = new AccountCategoryDtoMapper();
-
-    private final OrganizationRepository organizationRepository;
     private final AccountCategoryRepository accountCategoryRepository;
+    private final OrganizationRepository organizationRepository;
+    private final AccountCategoryResponseDtoMapper mapper;
 
-    public AccountCategoryServiceImpl(OrganizationRepository organizationRepository, AccountCategoryRepository accountCategoryRepository) {
-        this.organizationRepository = organizationRepository;
+    public AccountCategoryServiceImpl(
+            AccountCategoryRepository accountCategoryRepository,
+            OrganizationRepository organizationRepository,
+            AccountCategoryResponseDtoMapper mapper) {
         this.accountCategoryRepository = accountCategoryRepository;
+        this.organizationRepository = organizationRepository;
+        this.mapper = mapper;
     }
 
     @Override
-    public AccountCategoryDto createAccountCategory(AccountCategoryDto accountCategoryDto) {
-        Organization organization = this.organizationRepository.findById(accountCategoryDto.getOrganizationId())
-                .orElseThrow(OrganizationNotFoundException::new);
-
-        String name = accountCategoryDto.getName();
-        if (this.accountCategoryRepository.findByOrganizationIdAndName(accountCategoryDto.getOrganizationId(), name).isPresent()) {
-            throw new AccountCategoryAlreadyExistsException();
+    public AccountCategoryResponseDto createAccountCategory(CreateAccountCategoryRequestDto requestDto) {
+        // Check that the name is not used
+        String name = requestDto.name();
+        if (this.accountCategoryRepository.existsByNameAndOrganizationId(name, requestDto.organizationId())) {
+            throw new AccountCategoryAlreadyExistsException(name, requestDto.organizationId());
         }
 
+        // Find organization
+        Organization organization = this.organizationRepository
+                .findById(requestDto.organizationId())
+                .orElseThrow(() -> new OrganizationNotFoundException(requestDto.organizationId()));
+
+        // Create account category
         AccountCategory accountCategory = new AccountCategory();
-        accountCategory.setOrganization(organization);
         accountCategory.setName(name);
-        accountCategory.setAccountType(accountCategoryDto.getAccountType());
+        accountCategory.setOrganization(organization);
+        accountCategory.setAccountType(requestDto.accountType());
+        accountCategory.setActive(true);
 
+        // Persist
         AccountCategory result = this.accountCategoryRepository.save(accountCategory);
-        return mapper.apply(result);
+
+        // Return result
+        return this.mapper.toDto(result);
+
     }
 
     @Override
-    public AccountCategoryDto updateAccountCategory(AccountCategoryDto accountCategoryDto) {
-        Objects.requireNonNull(accountCategoryDto.getId());
-        AccountCategory accountCategory = this.accountCategoryRepository.findById(accountCategoryDto.getId())
-                .orElseThrow(AccountCategoryNotFoundException::new);
+    public AccountCategoryResponseDto updateAccountCategory(UpdateAccountCategoryRequestDto requestDto) {
+        // Find account category
+        AccountCategory accountCategory = this.accountCategoryRepository.findById(requestDto.id())
+                .orElseThrow(() -> new AccountCategoryNotFoundException(requestDto.id()));
 
-        // verify that the name is not occupied
-        if (!accountCategory.getName().equals(accountCategoryDto.getName())) {
-            String name = accountCategoryDto.getName();
-            if (this.accountCategoryRepository.findByOrganizationIdAndName(accountCategoryDto.getOrganizationId(), name).isPresent()) {
-                throw new AccountCategoryAlreadyExistsException();
+        // If name is changed, check that it is not used
+        String newName = requestDto.name();
+        if (!newName.equals(accountCategory.getName())) {
+            if (this.accountCategoryRepository.existsByNameAndOrganizationId(newName, requestDto.organizationId())) {
+                throw new AccountCategoryAlreadyExistsException(newName, requestDto.organizationId());
             }
+            accountCategory.setName(newName);
         }
-        accountCategory.setName(accountCategoryDto.getName());
-        accountCategory.setAccountType(accountCategoryDto.getAccountType());
+
+        // Update other fields
+        accountCategory.setAccountType(requestDto.accountType());
+        accountCategory.setActive(requestDto.active());
+
+        // Persist
         AccountCategory result = this.accountCategoryRepository.save(accountCategory);
-        return mapper.apply(result);
+
+        // Return result
+        return this.mapper.toDto(result);
     }
 
     @Override
-    public void deleteAccountCategory(UUID id) {
-        this.accountCategoryRepository.deleteById(id);
-
+    public Optional<AccountCategoryResponseDto> getAccountCategoryById(UUID id) {
+        return this.accountCategoryRepository.findById(id).map(this.mapper::toDto);
     }
 
     @Override
-    public List<AccountCategoryDto> getAccountCategories(UUID organizationId) {
-        return this.accountCategoryRepository.findByOrganizationId(organizationId)
-                .stream()
-                .map(mapper)
-                .toList();
+    public List<AccountCategoryResponseDto> getAllAccountCategories(UUID organizationId) {
+        return this.accountCategoryRepository.findAllByOrganizationId(organizationId).stream().map(this.mapper::toDto).toList();
     }
 }

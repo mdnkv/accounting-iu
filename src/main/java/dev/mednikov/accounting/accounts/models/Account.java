@@ -17,7 +17,7 @@ import java.util.UUID;
 )
 public class Account {
 
-    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    @Id @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,23 +26,23 @@ public class Account {
     private Organization organization;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "account_category_id")
-    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "account_category_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private AccountCategory accountCategory;
 
-    @Column(name = "account_type", nullable = false)
+    @Column(name = "normal_balance", nullable = false)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Enumerated(EnumType.STRING)
-    private AccountType accountType;
+    private AccountBalanceType normalBalance;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name="account_name")
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name="account_category")
     private String code;
 
-    @Column(nullable = false, name = "is_deprecated")
-    private boolean deprecated;
+    @Column(nullable = false, name = "is_active")
+    private boolean active;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -82,13 +82,13 @@ public class Account {
         this.organization = organization;
     }
 
-    public AccountType getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(AccountType accountType) {
-        this.accountType = accountType;
-    }
+//    public AccountType getAccountType() {
+//        return accountType;
+//    }
+//
+//    public void setAccountType(AccountType accountType) {
+//        this.accountType = accountType;
+//    }
 
     public String getName() {
         return name;
@@ -106,19 +106,27 @@ public class Account {
         this.code = code;
     }
 
-    public boolean isDeprecated() {
-        return deprecated;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setDeprecated(boolean deprecated) {
-        this.deprecated = deprecated;
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public AccountBalanceType getNormalBalance() {
+        return normalBalance;
+    }
+
+    public void setNormalBalance(AccountBalanceType normalBalance) {
+        this.normalBalance = normalBalance;
     }
 
     public void setAccountCategory(AccountCategory accountCategory) {
         this.accountCategory = accountCategory;
     }
 
-    public Optional<AccountCategory> getAccountCategory() {
-        return Optional.ofNullable(accountCategory);
+    public AccountCategory getAccountCategory() {
+        return this.accountCategory;
     }
 }
