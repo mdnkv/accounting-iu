@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS currencies_currency (
     name VARCHAR(255) NOT NULL,
     code VARCHAR(3) NOT NULL,
     is_primary BOOLEAN NOT NULL,
-    is_deprecated BOOLEAN NOT NULL,
+    is_active BOOLEAN NOT NULL,
     organization_id UUID NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
