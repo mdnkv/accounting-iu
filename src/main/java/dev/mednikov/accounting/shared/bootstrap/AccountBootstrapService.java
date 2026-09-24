@@ -1,7 +1,5 @@
 package dev.mednikov.accounting.shared.bootstrap;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mednikov.accounting.accounts.models.Account;
 import dev.mednikov.accounting.accounts.models.AccountCategory;
 import dev.mednikov.accounting.accounts.repositories.AccountCategoryRepository;
@@ -14,6 +12,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +73,6 @@ public class AccountBootstrapService {
         Resource resource = this.resourceLoader.getResource("classpath:bootstrap/accounts.json");
         TypeReference<List<AccountBootstrapDto>> typeReference = new TypeReference<>() {};
         List<AccountBootstrapDto> data = this.objectMapper.readValue(resource.getInputStream(), typeReference);
-//        Long organizationId = organization.getId();
         UUID organizationId = organization.getId();
         List<Account> accounts = new ArrayList<>();
         for (AccountBootstrapDto item : data) {
@@ -84,8 +83,8 @@ public class AccountBootstrapService {
             account.setOrganization(organization);
             account.setCode(item.getCode());
             account.setName(item.getName());
-            account.setAccountType(item.getAccountType());
-            account.setDeprecated(false);
+            account.setNormalBalance(item.getNormalBalance());
+            account.setActive(false);
             accounts.add(account);
         }
         accountRepository.saveAll(accounts);

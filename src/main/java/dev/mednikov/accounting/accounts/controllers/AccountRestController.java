@@ -1,6 +1,8 @@
 package dev.mednikov.accounting.accounts.controllers;
 
-import dev.mednikov.accounting.accounts.dto.AccountDto;
+import dev.mednikov.accounting.accounts.domain.AccountResponseDto;
+import dev.mednikov.accounting.accounts.domain.CreateAccountRequestDto;
+import dev.mednikov.accounting.accounts.domain.UpdateAccountRequestDto;
 import dev.mednikov.accounting.accounts.services.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,36 +27,26 @@ public class AccountRestController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('accounts:create') and hasAuthority(#body.organizationId)")
-    public @ResponseBody AccountDto createAccount(@RequestBody @Valid AccountDto body) {
+    public @ResponseBody AccountResponseDto createAccount(@RequestBody @Valid CreateAccountRequestDto body) {
         return this.accountService.createAccount(body);
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('accounts:update') and hasAuthority(#body.organizationId)")
-    public @ResponseBody AccountDto updateAccount(@RequestBody @Valid AccountDto body) {
+    public @ResponseBody AccountResponseDto updateAccount(@RequestBody @Valid UpdateAccountRequestDto body) {
         return this.accountService.updateAccount(body);
-    }
-
-    @DeleteMapping("/delete/{accountId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('accounts:delete')")
-    public void deleteAccount(@PathVariable UUID accountId) {
-        this.accountService.deleteAccount(accountId);
     }
 
     @GetMapping("/organization/{organizationId}")
     @PreAuthorize("hasAuthority('accounts:view') and hasAuthority(#organizationId)")
-    public @ResponseBody List<AccountDto> getAccounts(
-            @PathVariable UUID organizationId,
-            @RequestParam(defaultValue = "true", required = false) boolean includeDeprecated
-    ) {
-        return this.accountService.getAccounts(organizationId, includeDeprecated);
+    public @ResponseBody List<AccountResponseDto> getAccounts(@PathVariable UUID organizationId) {
+        return this.accountService.getAllAccounts(organizationId);
     }
 
     @GetMapping("/account/{accountId}")
     @PreAuthorize("hasAuthority('accounts:view')")
-    public ResponseEntity<AccountDto> getAccount(@PathVariable UUID accountId) {
-        Optional<AccountDto> accountDto = this.accountService.getAccount(accountId);
+    public ResponseEntity<AccountResponseDto> getAccount(@PathVariable UUID accountId) {
+        Optional<AccountResponseDto> accountDto = this.accountService.getAccountById(accountId);
         return ResponseEntity.of(accountDto);
     }
 

@@ -1,7 +1,5 @@
 package dev.mednikov.accounting.shared.bootstrap;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mednikov.accounting.authorities.models.Authority;
 import dev.mednikov.accounting.authorities.repositories.AuthorityRepository;
 import dev.mednikov.accounting.organizations.events.CreateOwnerEvent;
@@ -16,6 +14,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.*;
 import java.util.stream.Collectors;

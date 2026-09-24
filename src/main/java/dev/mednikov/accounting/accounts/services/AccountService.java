@@ -1,6 +1,8 @@
 package dev.mednikov.accounting.accounts.services;
 
-import dev.mednikov.accounting.accounts.dto.AccountDto;
+import dev.mednikov.accounting.accounts.domain.AccountResponseDto;
+import dev.mednikov.accounting.accounts.domain.CreateAccountRequestDto;
+import dev.mednikov.accounting.accounts.domain.UpdateAccountRequestDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,14 +10,12 @@ import java.util.UUID;
 
 public interface AccountService {
 
-    AccountDto createAccount(AccountDto accountDto);
+    AccountResponseDto createAccount (CreateAccountRequestDto requestDto);
 
-    AccountDto updateAccount(AccountDto accountDto);
+    AccountResponseDto updateAccount (UpdateAccountRequestDto requestDto);
 
-    void deleteAccount(UUID id);
+    Optional<AccountResponseDto> getAccountById(UUID id);
 
-    List<AccountDto> getAccounts(UUID organizationId, boolean includeDeprecated);
-
-    Optional<AccountDto> getAccount(UUID id);
+    List<AccountResponseDto> getAllAccounts(UUID organizationId);
 
 }

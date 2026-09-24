@@ -12,14 +12,14 @@ import java.util.UUID;
 @Entity
 @Table(
         name = "accounts_account_category",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"organization_id", "name"})}
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"organization_id", "category_name"})}
 )
 public class AccountCategory {
 
-    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    @Id @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "category_name")
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,6 +31,9 @@ public class AccountCategory {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private AccountType accountType;
+
+    @Column(name = "is_active", nullable = false)
+    private boolean active;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -89,4 +92,11 @@ public class AccountCategory {
         this.accountType = accountType;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }

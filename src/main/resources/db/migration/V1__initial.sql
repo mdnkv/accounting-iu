@@ -9,35 +9,52 @@ CREATE TABLE IF NOT EXISTS organizations_organization (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS currencies_currency (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    code VARCHAR(3) NOT NULL,
+    is_primary BOOLEAN NOT NULL,
+    is_deprecated BOOLEAN NOT NULL,
+    organization_id UUID NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (organization_id, code),
+    CONSTRAINT fk_currency_organization FOREIGN KEY (organization_id)
+        REFERENCES organizations_organization(id) ON DELETE CASCADE
+);
+
 CREATE TYPE ACCOUNT_TYPE AS ENUM ('ASSET', 'LIABILITY', 'EQUITY', 'INCOME', 'EXPENSE');
 
 CREATE TABLE IF NOT EXISTS accounts_account_category (
     id UUID PRIMARY KEY,
     organization_id UUID NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    category_name VARCHAR(255) NOT NULL,
     account_type ACCOUNT_TYPE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (organization_id, name),
+    is_active BOOLEAN NOT NULL,
+    UNIQUE (organization_id, category_name),
     CONSTRAINT fk_account_category_organization FOREIGN KEY (organization_id)
         REFERENCES organizations_organization(id) ON DELETE CASCADE
 );
 
+CREATE TYPE NORMAL_BALANCE_TYPE AS ENUM ('DEBIT', 'CREDIT');
+
 CREATE TABLE IF NOT EXISTS accounts_account (
     id UUID PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    code VARCHAR(20) NOT NULL,
-    account_type ACCOUNT_TYPE NOT NULL,
+    account_name VARCHAR(255) NOT NULL,
+    account_code VARCHAR(20) NOT NULL,
     organization_id UUID NOT NULL,
-    account_category_id UUID,
-    is_deprecated BOOLEAN NOT NULL DEFAULT FALSE,
+    account_category_id UUID NOT NULL,
+    normal_balance NORMAL_BALANCE_TYPE NOT NULL,
+    is_active BOOLEAN NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (organization_id, code),
+    UNIQUE (organization_id, account_code),
     CONSTRAINT fk_account_organization FOREIGN KEY (organization_id)
         REFERENCES organizations_organization(id) ON DELETE CASCADE,
     CONSTRAINT fk_account_account_category
-        FOREIGN KEY (account_category_id) REFERENCES accounts_account_category ON DELETE SET NULL
+        FOREIGN KEY (account_category_id) REFERENCES accounts_account_category ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS users_user (
@@ -55,19 +72,7 @@ CREATE TABLE IF NOT EXISTS users_user (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS currencies_currency (
-    id UUID PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    code VARCHAR(3) NOT NULL,
-    is_primary BOOLEAN NOT NULL,
-    is_deprecated BOOLEAN NOT NULL,
-    organization_id UUID NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (organization_id, code),
-    CONSTRAINT fk_currency_organization FOREIGN KEY (organization_id)
-        REFERENCES organizations_organization(id) ON DELETE CASCADE
-);
+
 
 CREATE TABLE IF NOT EXISTS journals_journal (
     id UUID PRIMARY KEY,
